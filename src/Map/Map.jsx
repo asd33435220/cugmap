@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import './App.css'
+import './Map.css'
 import newJPG from './image/new.jpg'
 import oldJPG from './image/old.jpg'
 
 
-function App() {
+function Map() {
   const OLD_TO_NEW_BY_CAR = "老校区至新校区:驾车🚗"
   const NEW_TO_OLD_BY_CAR = "新校区至老校区:驾车🚗"
   const OLD_TO_NEW_BY_BUS = "老校区至新校区:公交🚌"
@@ -519,4 +519,4 @@ function App() {
 
 
 
-export default App;
+export default Map;
