@@ -1,14 +1,9 @@
-html,body {
-    height: 100%;
-    box-sizing: border-box;
+.map-container{
+    /* margin-top: 80px; */
 }
-#root{
-    height: 100%;
-    width: 100%;
-    position: relative;
-}
+
 #container {
-    height: 70%;
+    height: 800px;
     width: 100%;
     position: relative;
 }
@@ -28,7 +23,7 @@ html,body {
     z-index: 99;
     position: fixed;
     background-color: #fff;
-    height: 30%;
+    height: 200px;
     width: 100%;
     right: 0;
     top: 0;
@@ -99,7 +94,7 @@ button{
     margin-bottom: 5px;
 }
 .box{
-    height: 30%;
+    height: 80px;
     width: 100%;
     display: flex;
     flex-direction: column;

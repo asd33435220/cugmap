@@ -4,7 +4,9 @@ import newJPG from './image/new.jpg'
 import oldJPG from './image/old.jpg'
 
 
-function Map() {
+function Map(props) {
+  const { openTools, setOpenTools } = props
+
   const OLD_TO_NEW_BY_CAR = "老校区至新校区:驾车🚗"
   const NEW_TO_OLD_BY_CAR = "新校区至老校区:驾车🚗"
   const OLD_TO_NEW_BY_BUS = "老校区至新校区:公交🚌"
@@ -38,10 +40,10 @@ function Map() {
     initMap()
     const h1 = document.querySelector('.welcome')
     const author = document.querySelector('.author')
-    const colorList = ["red", "green", "yellow", "cyan","hotpink"]
+    const colorList = ["red", "green", "yellow", "cyan", "hotpink"]
     let i = 0
     setInterval(() => {
-      h1.style.color = colorList[i]
+      // h1.style.color = colorList[i]
       author.style.color = colorList[i]
       i++
       i = i % 4
@@ -464,7 +466,7 @@ function Map() {
         <div className="instruction-container">
           {route[0].steps.map((item, index) => {
             return (
-            <div className="drive-path" key={item.instruction}>{index+1}:{item.instruction}</div>
+              <div className="drive-path" key={item.instruction}>{index + 1}:{item.instruction}</div>
             )
           })}
         </div>
@@ -475,9 +477,9 @@ function Map() {
     }
   }
   return (
-    <>
+    <div className="map-container">
       {isLoading && <div className="loading">路径计算中...</div>}
-      <div className="box">
+     {openTools && <div className="box">
         {isDrive && <div className="drive-panel">
           <div className="panel-title">导航面板
             <span className="panel-close" onClick={() => {
@@ -491,28 +493,27 @@ function Map() {
           </div>
           {panelRouter()}
         </div>}
-        <h2 className="welcome">🌺欢迎各位老师参加毕业答辩🌺</h2>
-        {/* <h2 className="title">朱宇宸的毕业设计</h2> */}
-        <div className="module-box">
+        {/* <h2 className="welcome">🌺欢迎各位老师参加毕业答辩🌺</h2> */}
+        
+          <div className="module-box">
           <button className="new">新校区</button>
           <button className="west">西校区</button>
           <button className="east">东校区</button>
           <button className="north">北校区</button>
         </div>
-        <div className="tool-box">
-          <button className="distance">距离测量</button>
-          <button className="area">面积测量</button>
-          <button className="drive" onClick={() => { setIsDrive(true) }}>校区导航</button>
-          <button className="tool">关闭工具</button>
-        </div>
+          <div className="tool-box">
+            <button className="distance">距离测量</button>
+            <button className="area">面积测量</button>
+            <button className="drive" onClick={() => { setIsDrive(true) }}>校区导航</button>
+            <button className="tool">关闭工具</button>
+          </div>
         <div className="info"></div>
-      </div>
+      </div>}
       <div id="container"></div>
       <div className="author-box">
         <div className="author">朱宇宸©️CUGMap</div>
       </div>
-
-    </>
+      </div>
   );
 
 }

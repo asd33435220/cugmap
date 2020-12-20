@@ -1,0 +1,133 @@
+@keyframes slidedown {
+  0% {
+    height: 0;
+  }
+
+  100% {
+    height: 150px;
+  }
+}
+
+.nav-container {
+  min-width: 320px;
+  box-sizing: border-box;
+  width: 100%;
+  background-color: #fff;
+  border-top: 3px solid #f48024;
+  border-bottom: 1px solid #ccc;
+  height: 80px;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+
+  .nav-logo {
+    flex-shrink: none;
+    width: 60px;
+    height: 60px;
+    margin-left: 30px;
+  }
+
+  .nav-main-text {
+    font-size: 30px;
+    margin-left: 20px;
+    flex-shrink: none;
+
+  }
+
+  .nav-right-phone {
+    flex-shrink: none;
+    height: 80px;
+    width: 80px;
+    margin-left: auto;
+    margin-right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    .nav-right-phone-barbox {
+      flex-shrink: none;
+      padding: 5px 0;
+      height: 45px;
+      width: 60px;
+      border: 2px #ccc solid;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+
+      .nav-right-phone-line {
+        background-color: #ccc;
+        width: 40px;
+        height: 4px;
+      }
+    }
+
+    .nav-right-phone-more-pannel {
+      width: 100px;
+      position: absolute;
+      top: 80px;
+      animation: slidedown .2s ease-in-out forwards;
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      border: 2px #f48024 solid;
+
+      .nav-right-phone-more-pannel-line {
+        width: 100px;
+        border-bottom: 2px solid #ccc;
+        height: 33.3%;
+        text-align: center;
+        line-height: 50px;
+
+      }
+    }
+  }
+
+  .nav-right {
+    margin-left: auto;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: row;
+    height: 80px;
+    align-items: center;
+    width: 350px;
+    justify-content: space-around;
+
+    .nav-right-button{
+        width: 100px;
+        height: 60px;
+        border: 2px blue solid;
+        border-radius: 3px;
+        text-align:center;
+        line-height: 60px;
+        font-size: 18px;
+    }
+  }
+
+  .nav-right-goback {
+    margin-left: auto;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: row;
+    height: 80px;
+    align-items: center;
+    width: 120px;
+    justify-content: space-around;
+
+    .nav-right-button{
+        width: 100px;
+        height: 60px;
+        border: 2px blue solid;
+        border-radius: 3px;
+        text-align:center;
+        line-height: 60px;
+        font-size: 18px;
+    }
+  }
+}

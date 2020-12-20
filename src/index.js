@@ -1,23 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Map from './Map/Map';
-import Login from './Login/Login';
-import { BrowserRouter as Router, Route, Switch, Link, NavLink } from 'react-router-dom';
-
+import Router from './router.jsx';
+import './index.css'
+import axios from 'axios';
+import qs from 'qs';
+React.$http = axios
+React.$qs = qs
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 ReactDOM.render(
-  <Router>
-    <NavLink
-      to="/login"
-      activeClassName="selected"
-    >FAQs</NavLink>
-    <Switch>
-      <Route path='/login' component={Login} />
-      {/* <Route path='/app' component={SideBar} /> */}
-      <Route path='/' component={Map} />
-    </Switch>
-  </Router>
-  ,
-  document.getElementById('root')
+  <Router />, document.getElementById('root')
 );
 
 
