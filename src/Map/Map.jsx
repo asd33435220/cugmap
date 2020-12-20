@@ -91,20 +91,36 @@ function Map(props) {
       map: map,
       // content:'<div class="marker-route marker-marker-bus-from">新</div>'
     });
+    newMarker.setLabel({
+      offset: new AMap.Pixel(-13, -24),
+      content: "新校区"
+    });
     westMarker = new AMap.Marker({
       position: westPosition,
       map: map,
       title: '西校区'
+    });
+    westMarker.setLabel({
+      offset: new AMap.Pixel(-13, -24),
+      content: "西校区"
     });
     eastMarker = new AMap.Marker({
       position: eastPosition,
       map: map,
       title: '东校区'
     });
+    eastMarker.setLabel({
+      offset: new AMap.Pixel(-13, -24),
+      content: "东校区"
+    });
     northMarker = new AMap.Marker({
       position: northPosition,
       map: map,
       title: '北校区'
+    });
+    northMarker.setLabel({
+      offset: new AMap.Pixel(-13, -24),
+      content: "北校区"
     });
     map.add([newMarker, westMarker, northMarker, eastMarker]);
     // map.setFitView();
@@ -490,6 +506,12 @@ function Map(props) {
       position: myMarkerPosition,
       map: myMapObj,
     });
+    // Marker.setTitle("设置位置");
+    Marker.setLabel({
+      offset: new AMap.Pixel(15, 15),
+      content: "<span style='color:red;font-weight:600;text-align:center;'>我的位置</span>"
+    });
+
     setMyMarker(Marker)
   }
   useEffect(() => {

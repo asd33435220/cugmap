@@ -11,6 +11,8 @@ function NavBar(props) {
     const [isMore, setIsMore] = useState(false)
     const [studentId, setStudentId] = useState("")
     const [studentName, setStudentName] = useState("")
+    const [isPanelShow, setIsPanelShow] = useState(false)
+    const [panelMessage, setPanelMessage] = useState("")
     function getToken() {
         React.$http.get('/token')
             .then(res => {
@@ -58,7 +60,17 @@ function NavBar(props) {
                 latitude: myMarkerPosition[1],
             }
         })
-        console.log(res);
+        console.log(res)
+        setIsPanelShow(true)
+        setTimeout(() => {
+            setIsPanelShow(false)
+        }, 2000)
+        if (res.data.code === 1) {
+            setPanelMessage(res.data.message)
+        } else {
+            setPanelMessage(res.data.message + "，请重试")
+        }
+
     }
     window.addEventListener('resize', event => {
         if (document.body.clientWidth < 1000 && !isPhone) {
@@ -71,6 +83,7 @@ function NavBar(props) {
 
     return (
         <div className="nav-container" >
+            {isPanelShow && <div className="nav-panel">{panelMessage}</div>}
             <img src={LOGO} className="nav-logo" onClick={() => {
                 window.open("https://www.cug.edu.cn/", '_blank')
             }} />
@@ -80,17 +93,53 @@ function NavBar(props) {
                 </div>
             }
             {
-                !isMap && <div className="nav-right-goback">
-                    <div className="nav-right-button" onClick={() => {
-                        window.location = "/"
-                    }}>回到地图
-                </div>
-                    {isPositionMode && <div className="nav-right-button" onClick={() => {
-                        handleChangePosition()
-                    }}>保存我的位置
-                </div>}
-                </div>
-            }
+                !isMap && (
+                    <>
+                        {isPhone ? (
+                            <div className="nav-right-phone">
+                                <div className="nav-right-phone-barbox"
+                                    onClick={() => {
+                                        setIsMore(!isMore)
+                                    }}>
+                                    <div className="nav-right-phone-line"></div>
+                                    <div className="nav-right-phone-line"></div>
+                                    <div className="nav-right-phone-line"></div>
+                                </div>
+                                {isMore && (
+                                    <div className="nav-right-phone-more-pannel">
+                                        <div className="nav-right-phone-more-pannel-line"
+                                            onClick={() => {
+                                                window.location = "/"
+                                                setIsMore(false)
+                                            }}>回到地图</div>
+                                        {isPositionMode && <div className="nav-right-phone-more-pannel-line"
+                                            onClick={() => {
+                                                handleChangePosition()
+                                                setIsMore(false)
+                                            }}>保存我的位置
+                                        </div>}
+                                        {/* <div className="nav-right-phone-more-pannel-line"></div> */}
+                                        <div className="nav-right-phone-more-pannel-line"></div>
+                                    </div>
+                                )}
+                            </div>
+
+                        ) : (
+                                <div>
+                                    <div className="nav-right-goback">
+                                        <div className="nav-right-button" onClick={() => {
+                                            window.location = "/"
+                                        }}>回到地图
+                                </div>
+                                        {isPositionMode && <div className="nav-right-button" onClick={() => {
+                                            handleChangePosition()
+                                        }}>保存我的位置
+                                </div>}
+                                    </div>
+                                </div>
+                            )}
+                    </>
+                )}
             {
                 isMap && <>
                     {isPhone ? (
@@ -107,6 +156,7 @@ function NavBar(props) {
                                 <div className="nav-right-phone-more-pannel">
                                     <div className="nav-right-phone-more-pannel-line"
                                         onClick={() => {
+                                            setIsMore(false)
                                             if (isLogin) {
                                                 window.location = "/message"
                                             } else {
@@ -115,6 +165,7 @@ function NavBar(props) {
                                         }}>{isLogin ? '查看我的私信' : '注册'}</div>
                                     <div className="nav-right-phone-more-pannel-line"
                                         onClick={() => {
+                                            setIsMore(false)
                                             if (isLogin) {
                                                 window.location = "/position"
                                                 setIsPositionMode(true)
@@ -126,10 +177,12 @@ function NavBar(props) {
 
                                     <div className="nav-right-phone-more-pannel-line"
                                         onClick={() => {
+                                            setIsMore(false)
                                             setOpenTools(!openTools)
                                         }}> {openTools ? "关闭" : "打开"}工具栏</div>
                                     {<div className="nav-right-phone-more-pannel-line"
                                         onClick={() => {
+                                            setIsMore(false)
                                             handleLogout()
                                         }}> {isLogin ? "退出登陆" : "尽情期待"}</div>}
                                 </div>
