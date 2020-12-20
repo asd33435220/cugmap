@@ -12,12 +12,15 @@ function Login() {
             password: studentPassword,
         }
         const data = React.$qs.stringify(form)
-        const res = await React.$http.post("http://localhost:9999/user/login", data)
+        const res = await React.$http.post("/user/login", data)
         setIsAfterLogin(true)
+        console.log("res.data", res.data);
         if (res.data.code === 1) {
             setLoginMessage(res.data.message + "，即将跳转主页")
             setTimeout(() => {
                 window.location = "/"
+                // setIsAfterLogin(false)
+                localStorage.setItem('token', res.data.token)
             }, 3000)
         } else {
             setLoginMessage(res.data.message + "，请重新登陆")

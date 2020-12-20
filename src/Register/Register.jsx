@@ -23,7 +23,7 @@ function Register() {
             password: studentPassword,
         }
         const data = React.$qs.stringify(form)
-        const res = await React.$http.post("http://localhost:9999/user/register", data)
+        const res = await React.$http.post("/user/register", data)
         setRegisterMessage(res.data.message)
         if (res.data.code === 1) {
             setIsAfterRegister(true)
@@ -43,7 +43,7 @@ function Register() {
         const query = {
             student_id: studentId
         }
-        const res = await React.$http.get("http://localhost:9999/user/check", {
+        const res = await React.$http.get("/user/check", {
             params: query
         })
         if (res.data.code === 1) {

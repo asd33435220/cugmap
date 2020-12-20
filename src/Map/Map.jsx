@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import './Map.css'
+import './Map.scss'
 import newJPG from './image/new.jpg'
 import oldJPG from './image/old.jpg'
 
 
 function Map(props) {
-  const { openTools, setOpenTools } = props
+  const { openTools, isPositionMode, myMarkerPosition, setMyMarkerPosition, setOpenTools } = props
 
   const OLD_TO_NEW_BY_CAR = "老校区至新校区:驾车🚗"
   const NEW_TO_OLD_BY_CAR = "新校区至老校区:驾车🚗"
@@ -22,6 +22,8 @@ function Map(props) {
   const [route, setRoute] = useState([])
   const [points, setPoints] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [myMapObj, setMyMapObj] = useState(null)
+  const [myMarker, setMyMarker] = useState(null)
 
   let map = null
   let mouseTool = null
@@ -34,7 +36,6 @@ function Map(props) {
   const westPosition = [114.39835417717694, 30.520580596379155]
   const eastPosition = [114.40520669549704, 30.519101428977407]
   const northPosition = [114.3994557698071, 30.528924839045622]
-
 
   useEffect(() => {
     initMap()
@@ -50,7 +51,8 @@ function Map(props) {
     }, 300)
   }, [])
   function initMap() {
-    map = new window.AMap.Map('container', {
+    const AMap = window.AMap
+    map = new AMap.Map('container', {
       zoom: 14, //缩放级别
       center: [114.61617672935125, 30.45759461941093],
       resizeEnable: true,
@@ -60,6 +62,8 @@ function Map(props) {
       pitch: 0,//地图仰角设定
       lang: 'zh_cn',  //设置地图语言类型
     });
+    console.log("click");
+
     map.on('click', function (ev) {
       // 触发事件的对象
       var target = ev.target;
@@ -70,12 +74,15 @@ function Map(props) {
       var pixel = ev.pixel;
       // 触发事件类型
       var type = ev.type;
+      setMyMarkerPosition([lnglat.R, lnglat.Q])
     });
     initMarker()
     initPlugin()
     initEvent()
     setPanelState(0)
+    setMyMapObj(map)
   }
+
   function initMarker() {
     const AMap = window.AMap
     newMarker = new AMap.Marker({
@@ -476,10 +483,24 @@ function Map(props) {
       )
     }
   }
+  function addMarker() {
+    myMarker && myMapObj.remove(myMarker)
+    const AMap = window.AMap
+    const Marker = new AMap.Marker({
+      position: myMarkerPosition,
+      map: myMapObj,
+    });
+    setMyMarker(Marker)
+  }
+  useEffect(() => {
+    myMarker && myMapObj.add(myMarker)
+  }, [myMarker])
   return (
-    <div className="map-container">
+    <div className="map-container" onClick={() => {
+      isPositionMode && addMarker()
+    }}>
       {isLoading && <div className="loading">路径计算中...</div>}
-     {openTools && <div className="box">
+      {openTools && <div className="box">
         {isDrive && <div className="drive-panel">
           <div className="panel-title">导航面板
             <span className="panel-close" onClick={() => {
@@ -494,26 +515,45 @@ function Map(props) {
           {panelRouter()}
         </div>}
         {/* <h2 className="welcome">🌺欢迎各位老师参加毕业答辩🌺</h2> */}
-        
-          <div className="module-box">
+
+        <div className="module-box">
           <button className="new">新校区</button>
           <button className="west">西校区</button>
           <button className="east">东校区</button>
           <button className="north">北校区</button>
         </div>
-          <div className="tool-box">
-            <button className="distance">距离测量</button>
-            <button className="area">面积测量</button>
-            <button className="drive" onClick={() => { setIsDrive(true) }}>校区导航</button>
-            <button className="tool">关闭工具</button>
-          </div>
+        <div className="tool-box">
+          <button className="distance">距离测量</button>
+          <button className="area">面积测量</button>
+          <button className="drive" onClick={() => { setIsDrive(true) }}>校区导航</button>
+          <button className="tool">关闭工具</button>
+        </div>
         <div className="info"></div>
+      </div>}
+      {isPositionMode && <div className="position-box">
+        <div className="position-mode-title">
+          请点击地图选择你的位置
+        </div>
+        <div className="position-mode-title">
+          你目前的位置是
+        </div>
+        <div className="position-mode-title">
+          经度
+          <span style={{ color: "red", fontSize: 23 }}>
+            {myMarkerPosition[0]}
+          </span>
+        </div><div className="position-mode-title">
+          纬度
+          <span style={{ color: "red", fontSize: 23 }}>
+            {myMarkerPosition[1]}
+          </span>
+        </div>
       </div>}
       <div id="container"></div>
       <div className="author-box">
         <div className="author">朱宇宸©️CUGMap</div>
       </div>
-      </div>
+    </div>
   );
 
 }
