@@ -134,10 +134,10 @@ function Register() {
                         {passwordMessage}
                     </div>}
                 </div>
-                <button className={`register-form-button ${studentPassword.length && studentId.length ? "register-form-button-allow" : "register-form-button-not-allow"}`}
+                <div className={`register-form-button ${studentPassword.length && studentId.length ? "register-form-button-allow" : "register-form-button-not-allow"}`}
                     onClick={() => {
                         isIdChecked && isPasswordChecked && handleRegister()
-                    }}>{isIdChecked && isPasswordChecked ? "确认注册" : "请先输入"}</button>
+                    }}>{isIdChecked && isPasswordChecked ? "确认注册" : "请先输入"}</div>
             </div>
         </div>
     );

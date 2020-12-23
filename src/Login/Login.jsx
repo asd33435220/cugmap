@@ -56,10 +56,10 @@ function Login() {
                         }}
                     />
                 </div>
-                <button className={`login-form-button ${studentPassword.length && studentId.length ? "login-form-button-allow" : "login-form-button-not-allow"}`}
+                <div className={`login-form-button ${studentPassword.length && studentId.length ? "login-form-button-allow" : "login-form-button-not-allow"}`}
                     onClick={() => {
                         studentPassword.length && studentId.length && handleLogin()
-                    }}>{studentPassword.length && studentId.length ? "登陆" : "请先输入完成"}</button>
+                    }}>{studentPassword.length && studentId.length ? "登陆" : "请先输入完成"}</div>
             </div>
         </div>
     );
