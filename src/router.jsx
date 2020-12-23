@@ -11,14 +11,39 @@ import { BrowserRouter as Router, Route, Switch, Link, NavLink } from 'react-rou
 function router() {
     const [openTools, setOpenTools] = useState(true)
     const [isPositionMode, setIsPositionMode] = useState(false)
+    const [isGamMode, setIsGamMode] = useState(false)
     const [myMarkerPosition, setMyMarkerPosition] = useState([0, 0])
+    const [nearbyUserList, setNearbyUserList] = useState([])
+    const [userPosition, setUserPosition] = useState([0,0])
+    const [studentId, setStudentId] = useState("")
+    const [studentName, setStudentName] = useState("")
+    const [signature, setSignature] = useState("")
+  const [myMapObj, setMyMapObj] = useState(null)
+
 
     return (
         <Router>
             <div style={{ width: "100%", height: 80 }} />
-            <NavBar openTools={openTools} setOpenTools={setOpenTools}
-                isPositionMode={isPositionMode} setIsPositionMode={setIsPositionMode}
-                myMarkerPosition={myMarkerPosition} />
+            <NavBar
+                openTools={openTools}
+                setOpenTools={setOpenTools}
+                isPositionMode={isPositionMode}
+                isGamMode={isGamMode}
+                setIsPositionMode={setIsPositionMode}
+                setIsGamMode={setIsGamMode}
+                myMarkerPosition={myMarkerPosition}
+                setUserPosition={setUserPosition}
+                studentId={studentId}
+                setStudentId={setStudentId}
+                studentName={studentName}
+                setStudentName={setStudentName}
+                signature={signature}
+                setSignature={setSignature}
+                userPosition={userPosition}
+                setNearbyUserList={setNearbyUserList}
+                nearbyUserList={nearbyUserList}
+                myMapObj={myMapObj}
+            />
             {/* <NavLink to="/login">登陆</NavLink> */}
             <Switch>
                 <Route path='/register' component={Register} />
@@ -29,9 +54,19 @@ function router() {
                         openTools={openTools}
                         setOpenTools={setOpenTools}
                         isPositionMode={isPositionMode}
+                        isGamMode={isGamMode}
+                        setIsGamMode={setIsGamMode}
                         setIsPositionMode={setIsPositionMode}
                         myMarkerPosition={myMarkerPosition}
                         setMyMarkerPosition={setMyMarkerPosition}
+                        nearbyUserList={nearbyUserList}
+                        userPosition={userPosition}
+                        studentId={studentId}
+                        studentName={studentName}
+                        setSignature={setSignature}
+                        signature={signature}
+                        myMapObj={myMapObj}
+                        setMyMapObj={setMyMapObj}
                     />} />
             </Switch>
             <Footer />

@@ -5,7 +5,20 @@ import oldJPG from './image/old.jpg'
 
 
 function Map(props) {
-  const { openTools, isPositionMode, myMarkerPosition, setMyMarkerPosition, setOpenTools } = props
+  const {
+    openTools,
+    isPositionMode,
+    myMarkerPosition,
+    setMyMarkerPosition,
+    setOpenTools,
+    userPosition,
+    studentId,
+    studentName,
+    signature,
+    setSignature,
+    setMyMapObj,
+    myMapObj,
+    nearbyUserList } = props
 
   const OLD_TO_NEW_BY_CAR = "老校区至新校区:驾车🚗"
   const NEW_TO_OLD_BY_CAR = "新校区至老校区:驾车🚗"
@@ -22,8 +35,16 @@ function Map(props) {
   const [route, setRoute] = useState([])
   const [points, setPoints] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const [myMapObj, setMyMapObj] = useState(null)
   const [myMarker, setMyMarker] = useState(null)
+  const [isMessageBoxShow, setIsMessageBoxShow] = useState(false)
+  const [recieverId, setReceiverId] = useState("")
+  const [isDrivePanelShow, setIsDrivePanelShow] = useState(false)
+  const [driveRoute, setDriveRoute] = useState([])//导航去找朋友
+  const [friendName, setFriendName] = useState("")
+  const [isMessageCallbackShow, setIsMessageCallbackShow] = useState(false)
+  const [messageCallback, setMessageCallback] = useState("")
+
+  const [message, setMessage] = useState("")
 
   let map = null
   let mouseTool = null
@@ -52,6 +73,7 @@ function Map(props) {
   }, [])
   function initMap() {
     const AMap = window.AMap
+
     map = new AMap.Map('container', {
       zoom: 14, //缩放级别
       center: [114.61617672935125, 30.45759461941093],
@@ -74,7 +96,7 @@ function Map(props) {
       var pixel = ev.pixel;
       // 触发事件类型
       var type = ev.type;
-      setMyMarkerPosition([lnglat.R, lnglat.Q])
+      setMyMarkerPosition([lnglat.lng, lnglat.lat])
     });
     initMarker()
     initPlugin()
@@ -290,6 +312,17 @@ function Map(props) {
       // 在图面添加定位控件，用来获取和展示用户主机所在的经纬度位置
       map.addControl(new AMap.Geolocation());
     });
+    // AMap.plugin('AMap.Autocomplete', function () {
+    //   // 实例化Autocomplete
+    //   var autoOptions = {
+    //     //city 限定城市，默认全国
+    //     city: '全国'
+    //   }
+    //   var autoComplete = new AMap.Autocomplete(autoOptions);
+    //   autoComplete.search(keyword, function (status, result) {
+    //     // 搜索成功时，result即是对应的匹配数据
+    //   })
+    // })
   }
   function startDrive(e) {
     switch (e.target.innerText) {
@@ -438,6 +471,41 @@ function Map(props) {
       console.error("setPolicyError")
     }
   }
+  function driveToFriend(position) {
+    setIsMessageBoxShow(false)
+    const AMap = window.AMap
+    map = new AMap.Map("container", {
+      zoom: 15, //缩放级别
+      center: userPosition,
+      resizeEnable: true,
+    });
+    //构造路线导航类
+    var driving = new AMap.Driving({
+      map: map,
+      policy: AMap.DrivingPolicy.REAL_TRAFFIC,
+    });
+    // 根据起终点名称规划驾车导航路线
+    let startPosition = [...userPosition]
+    let endPosition = [...position]
+    setIsLoading(true)
+    driving.search(startPosition, endPosition, function (status, result) {
+      console.log("end");
+
+      // result 即是对应的驾车导航信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_DrivingResult
+      if (status === 'complete') {
+        console.log('绘制驾车路线完成')
+        console.log("result.routes[0]", result.routes[0]);
+
+        setIsDrivePanelShow(true)
+        setDriveRoute(result.routes[0])
+        console.log(result);
+      } else {
+        console.error('获取驾车数据失败：' + result)
+      }
+      setIsLoading(false)
+
+    });
+  }
   function panelRouter() {
     if (panelState === 0) {
       return (<>
@@ -499,11 +567,12 @@ function Map(props) {
       )
     }
   }
-  function addMarker() {
+  function addMarker(isUserPosition = false) {
+    console.log("userPosition", userPosition);
     myMarker && myMapObj.remove(myMarker)
     const AMap = window.AMap
     const Marker = new AMap.Marker({
-      position: myMarkerPosition,
+      position: isUserPosition ? userPosition : myMarkerPosition,
       map: myMapObj,
     });
     // Marker.setTitle("设置位置");
@@ -511,16 +580,207 @@ function Map(props) {
       offset: new AMap.Pixel(15, 15),
       content: "<span style='color:red;font-weight:600;text-align:center;'>我的位置</span>"
     });
-
     setMyMarker(Marker)
   }
   useEffect(() => {
     myMarker && myMapObj.add(myMarker)
   }, [myMarker])
+  useEffect(() => {
+    if (nearbyUserList.length > 0) {
+      const center = [114, 30]
+      const AMap = window.AMap
+      map = new AMap.Map('container', {
+        zoom: 15, //缩放级别
+        center: userPosition,
+        resizeEnable: true,
+        // layers: [new AMap.TileLayer.Satellite()],  //设置图层,可设置成包含一个或多个图层的数组
+        // mapStyle: 'amap://styles/whitesmoke',  //设置地图的显示样式
+        viewMode: '3D',  //设置地图模式
+        pitch: 0,//地图仰角设定
+        lang: 'zh_cn',  //设置地图语言类型
+      });
+      console.log("click");
+      const Marker = new AMap.Marker({
+        position: userPosition,
+        map: map,
+      });
+      Marker.setLabel({
+        offset: new AMap.Pixel(15, 15),
+        content: "<span style='color:red;font-weight:600;text-align:center;'>我的位置</span>"
+      });
+      setMyMarker(Marker)
+      setMyMapObj(map)
+      getFriendMarkers(nearbyUserList)
+    }
+  }, [nearbyUserList, userPosition])
+  useEffect(() => {
+    if (isPositionMode && userPosition[0] != 0) {
+      myMapObj.setCenter(userPosition)
+      addMarker(true)
+    } else if (userPosition[0] != 0 && userPosition[1] != 0) {
+      myMapObj.setCenter(userPosition)
+
+    }
+  }, [isPositionMode, userPosition])
+  function getFriendMarkers(nearbyUserList) {
+    function getFriendInfoWindow(name, signature, position) {
+      var title = name + "",
+        content = [];
+      content.push(signature);
+      var infoWindow = new AMap.InfoWindow({
+        isCustom: true,  //使用自定义窗体
+        content: createFriendInfoWindow(title, content.join("<br/>"), position),
+        offset: new AMap.Pixel(16, -45)
+      });
+      return infoWindow
+    }
+
+    //构建自定义信息窗体
+    function createFriendInfoWindow(title, content, position) {
+      var info = document.createElement("div");
+      info.className = "custom-info input-card content-window-card";
+
+      //可以通过下面的方式修改自定义窗体的宽高
+      // info.style.width = "400px";
+      // 定义顶部标题
+      var top = document.createElement("div");
+      var titleD = document.createElement("div");
+      var closeX = document.createElement("img");
+      top.className = "info-top";
+      titleD.innerHTML = title + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+      closeX.src = "https://webapi.amap.com/images/close2.gif";
+      closeX.onclick = closeFriendInfoWindow;
+
+      top.appendChild(titleD);
+      top.appendChild(closeX);
+      info.appendChild(top);
+
+      // 定义中部内容
+      var middle = document.createElement("div");
+      middle.className = "info-middle";
+      middle.style.backgroundColor = 'white';
+      middle.innerHTML = "<span style='color:red'>个性签名:</span>" + content;
+      var chat = document.createElement("span");
+      chat.className = "friend-chat";
+      chat.innerText = "导航去找Ta"
+      chat.onclick = () => {
+        driveToFriend(position)
+        setFriendName(title)
+      }
+      middle.appendChild(chat)
+      info.appendChild(middle);
+
+
+      // 定义底部内容
+      var bottom = document.createElement("div");
+      bottom.className = "info-bottom";
+      bottom.style.position = 'relative';
+      bottom.style.top = '0px';
+      bottom.style.margin = '0 auto';
+      var sharp = document.createElement("img");
+      sharp.src = "https://webapi.amap.com/images/sharp.png";
+      bottom.appendChild(sharp);
+      info.appendChild(bottom);
+      return info;
+    }
+
+    //关闭信息窗体
+    function closeFriendInfoWindow() {
+      setIsMessageBoxShow(false)
+      map.clearInfoWindow();
+    }
+    const MarkerList = []
+    const AMap = window.AMap
+    let focusFlag = false
+    let focusPos = [0, 0]
+    nearbyUserList.map(item => {
+      const position = item.position.split(';')
+      const lng = Number(position[0])
+      const lat = Number(position[1])
+      const Marker = new AMap.Marker({
+        position: [lng, lat],
+        map: map,
+      });
+      Marker.setLabel({
+        offset: new AMap.Pixel(15, 15),
+        content: `<span style='color:red;font-weight:600;text-align:center;'>${item.username}的位置</span>`
+      });
+      AMap.event.addListener(Marker, 'click', function () {
+        console.log("here");
+        let infoNew = getFriendInfoWindow(item.username, item.signature, [lng, lat])
+        infoNew.open(map, Marker.getPosition());
+        map.setCenter([lng, lat]);
+        map.setZoom(18)
+        map.setPitch(60)
+        leaveMessage(item.student_id)
+      });
+      MarkerList.push(Marker)
+      if (item.setFocus) {
+        focusFlag = true
+        focusPos = [lng, lat]
+        item.setFocus = false
+      }
+    })
+    map.add(MarkerList)
+    if (focusFlag) {
+      map.setCenter(focusPos)
+      map.setZoom(18)
+      map.setPitch(60)
+    } else {
+      map.setFitView(); //自适应
+    }
+  }
+  function leaveMessage(toUserId) {
+    setIsMessageBoxShow(true)
+    setReceiverId(toUserId)
+  }
+  async function sendMessage() {
+    const form = {
+      receiver_id: recieverId,
+      message: message,
+      sender_id: studentId,
+    }
+    const data = React.$qs.stringify(form)
+    const res = await React.$http.post("/message/leave", data)
+    console.log(res);
+    setMessageCallback(res.data.message)
+    setIsMessageCallbackShow(true)
+    setTimeout(() => {
+      setMessageCallback("")
+      setIsMessageCallbackShow(false)
+    }, 3000)
+  }
   return (
     <div className="map-container" onClick={() => {
       isPositionMode && addMarker()
     }}>
+      {isMessageBoxShow && <div className="message-box">
+
+        {isMessageCallbackShow ? (
+          <div className="message-box-title">
+            {messageCallback}
+          </div>)
+          : (<>
+            <div className="message-box-title">你想对Ta说什么？(最多200字)</div>
+            <input type="text" className="message-box-intput" placeholder="校友竟在我身边"
+              onChange={event => {
+                setMessage(event.target.value)
+              }} />
+            <button className="message-box-btn" onClick={sendMessage}>提 交</button>
+          </>)
+        }
+
+
+      </div>}
+      {isDrivePanelShow && <div className="drive-friend-panel">
+        <div className="drive-friend-close" onClick={() => {
+          window.location = "/"
+        }}>❌</div>
+        <div className="drive-friend-panel-title">正在去找{friendName},距Ta约{driveRoute.distance / 1000}千米</div>
+        {driveRoute.steps && driveRoute.steps.map((item, index) => {
+          return <div className="drive-friend-instruction" key={item.instruction}>{index}:{item.instruction}</div>
+        })}
+      </div>}
       {isLoading && <div className="loading">路径计算中...</div>}
       {openTools && <div className="box">
         {isDrive && <div className="drive-panel">
@@ -554,7 +814,9 @@ function Map(props) {
       </div>}
       {isPositionMode && <div className="position-box">
         <div className="position-mode-title">
-          请点击地图选择你的位置
+          <span style={{ color: "red", fontSize: 23 }}>
+            请点击地图选择你的位置
+          </span>
         </div>
         <div className="position-mode-title">
           你目前的位置是
@@ -562,14 +824,21 @@ function Map(props) {
         <div className="position-mode-title">
           经度
           <span style={{ color: "red", fontSize: 23 }}>
-            {myMarkerPosition[0]}
+            {myMarkerPosition[0] === 0 ? userPosition[0] : myMarkerPosition[0]}
           </span>
         </div><div className="position-mode-title">
           纬度
           <span style={{ color: "red", fontSize: 23 }}>
-            {myMarkerPosition[1]}
+            {myMarkerPosition[1] === 0 ? userPosition[1] : myMarkerPosition[1]}
           </span>
         </div>
+        <div className="position-mode-title">在这里更改你的个性签名(用于匹配校友,可选) 最多50字</div>
+        <div className="position-mode-title">
+          <label htmlFor="signature">个性签名:</label>
+          <input style={{ marginLeft: 20, height: 20, width: 250, fontSize: 18 }} placeholder="快来更改你的个性签名吧！" type="text" id="signature"
+            onChange={event => {
+              setSignature(event.target.value)
+            }} /></div>
       </div>}
       <div id="container"></div>
       <div className="author-box">

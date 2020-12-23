@@ -23,7 +23,56 @@
   align-items: center;
   position: fixed;
   top: 0;
-  z-index: 999;
+  z-index: 1000;
+
+  .nav-chat-message-box {
+    height: 300px;
+    width: 40%;
+    background-color: black;
+    color: #fff;
+    opacity: .7;
+    z-index: 1001;
+    position: fixed;
+    right: 0;
+    top: 400px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    
+
+    .nav-chat-message-title {
+      text-align: center;
+      font-size: 24px;
+      color: red;
+    }
+
+    .nav-chat-message-container {
+
+      border-bottom: white 1px solid;
+      margin-bottom: 2px;
+
+      .nav-chat-list-name {
+        font-size: 14px;
+        color: rgb(8, 247, 64);
+
+        .nav-chat-list-username {
+          font-size: 18px;
+          color: hotpink;
+          margin: 0;
+          cursor: pointer;
+        }
+        
+      }
+
+      .nav-chat-list-message {
+        font-size: 20px;
+      }
+
+      .nav-chat-list-time {
+        font-size: 14px;
+        opacity: .6;
+      }
+    }
+  }
 
   .nav-panel {
     position: absolute;
@@ -42,6 +91,28 @@
   .nav-welcome {
     margin-left: 20px;
     font-size: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    .nav-username {
+      margin: 0;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .nav-user-signature {
+      font-size: 13px;
+      color: black;
+      opacity: .5;
+      max-width: 300px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      cursor: pointer;
+    }
   }
 
   .nav-logo {
@@ -52,6 +123,9 @@
   }
 
   .nav-main-text {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
     font-size: 30px;
     margin-left: 20px;
     flex-shrink: none;

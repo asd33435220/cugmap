@@ -1,4 +1,5 @@
 .map-container {
+  position: relative;
 
   /* margin-top: 80px; */
 }
@@ -118,8 +119,13 @@ button {
 }
 
 .position-box {
-  height: 120px;
-  width: 100%;
+  position: absolute;
+  top: 0;
+  background-color: #000;
+  opacity: .8;
+  z-index: 999;
+  height: 200px;
+  width: 500px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -127,7 +133,7 @@ button {
      
   .position-mode-title {
     font-size: 20px;
-    color: black;
+    color: #fff;
   }
 }
 
@@ -198,6 +204,8 @@ div.info-middle {
   font-size: 12px;
   padding: 10px 6px;
   line-height: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 div.info-bottom {
@@ -220,4 +228,84 @@ span {
 .info-middle img {
   float: left;
   margin-right: 6px;
+}
+
+.friend-chat {
+  cursor: pointer;
+  font-size: 18px;
+  color: hotpink;
+}
+
+.message-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  position: fixed;
+  z-index: 1001;
+  left: 10%;
+  top: 150px;
+  width: 40%;
+  // height: 150px;
+  background-color: black;
+  opacity: .7;
+  border-radius: 10px;
+  padding: 10px;
+
+  .message-box-title {
+    color: white;
+    font-size: 24px;
+  }
+
+  .message-box-intput {
+    margin: 10px 0 ;
+    height: 30px;
+    font-size: 22px;
+    width: 90%;
+  }
+
+  .message-box-btn {
+    height: 30px;
+    width: 80px;
+    cursor: pointer;
+  }
+}
+
+.drive-friend-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  z-index: 999;
+  width: 320px;
+  height: 100px;
+  top: 100px;
+  left: 20px;
+  position: fixed;
+  background-color: black;
+  opacity: .7;
+  border-radius: 10px;
+  color: #fff;
+  overflow: auto;
+  overscroll-behavior: contain;
+
+  .drive-friend-close {
+    position: absolute;
+    right: 10px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+  }
+
+  .drive-friend-panel-title {
+    color: hotpink;
+    width: 300px;
+    text-align: left;
+    font-size: 18px;
+  }
+
+  .drive-friend-instruction {
+    margin: 3px 0;
+  }
 }
