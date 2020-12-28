@@ -273,8 +273,17 @@ function NavBar(props) {
                                         onClick={() => {
                                             setIsMore(false)
                                             if (isLogin) {
-                                                window.location = "/gam"
-                                                setIsGamMode(true)
+                                                if (userPosition[0] !== 0 && userPosition[0] !== 0) {
+                                                    window.location = "/gam"
+
+                                                    setIsGamMode(true)
+                                                } else {
+                                                    setIsPanelShow(true)
+                                                    setPanelMessage("你需要先补充位置信息，才能开始社交喔！")
+                                                    setTimeout(() => {
+                                                        window.location = "/position"
+                                                    }, 2000)
+                                                }
                                             } else {
                                                 window.location = "/register"
                                             }
@@ -308,8 +317,12 @@ function NavBar(props) {
                             <div className="nav-right">
                                 <div className="nav-right-button" onClick={() => {
                                     if (isLogin) {
-                                        window.location = "/gam"
-                                        setIsGamMode(true)
+                                        if (userPosition[0] !== 0 && userPosition[0] !== 0) {
+                                            window.location = "/gam"
+                                            setIsGamMode(true)
+                                        } else {
+                                            window.location = "/position"
+                                        }
                                     } else {
                                         window.location = "/register"
                                     }

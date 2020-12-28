@@ -586,7 +586,7 @@ function Map(props) {
     myMarker && myMapObj.add(myMarker)
   }, [myMarker])
   useEffect(() => {
-    if (nearbyUserList.length > 0) {
+    if (nearbyUserList && nearbyUserList.length > 0) {
       const center = [114, 30]
       const AMap = window.AMap
       map = new AMap.Map('container', {
