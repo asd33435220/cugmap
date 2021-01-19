@@ -181,7 +181,7 @@ function NavBar(props) {
     return (
         <div className="nav-container" >
             {isMessageBoxShow && <div className="nav-chat-message-box">
-                <div className="nav-chat-message-title">{myMessageList ? "消息列表" : "没有人给你留言 好可怜喔🤡"}</div>
+                <div className="nav-chat-message-title">{myMessageList ? "消息列表" : "还没有消息"}</div>
                 {myMessageList && myMessageList.map((item, index) => {
                     return <div className="nav-chat-message-container" key={item.SendTime}>
                         <div className="nav-chat-list-name" onClick={() => {

@@ -60,6 +60,7 @@ function Map(props) {
 
   useEffect(() => {
     initMap()
+
     const h1 = document.querySelector('.welcome')
     const author = document.querySelector('.author')
     const colorList = ["red", "green", "yellow", "cyan", "hotpink"]
@@ -101,6 +102,7 @@ function Map(props) {
     initMarker()
     initPlugin()
     initEvent()
+    getMapCenter()
     setPanelState(0)
     setMyMapObj(map)
   }
@@ -323,6 +325,58 @@ function Map(props) {
     //     // 搜索成功时，result即是对应的匹配数据
     //   })
     // })
+  }
+  function getMapCenter() {
+
+    const AMap = window.AMap
+    AMap.plugin('AMap.Geolocation', function () {
+      var geolocation = new AMap.Geolocation({
+        // 是否使用高精度定位，默认：true
+        enableHighAccuracy: true,
+        // 设置定位超时时间，默认：无穷大
+        timeout: 10000,
+        // 定位按钮的停靠位置的偏移量，默认：Pixel(10, 20)
+        buttonOffset: new AMap.Pixel(10, 20),
+        //  定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+        zoomToAccuracy: true,
+        //  定位按钮的排放位置,  RB表示右下
+        buttonPosition: 'RB'
+      })
+
+      geolocation.getCurrentPosition()
+      AMap.event.addListener(geolocation, 'complete', onComplete)
+      AMap.event.addListener(geolocation, 'error', onError)
+
+      function onComplete(data) {
+        console.log(data.position);
+        const lat = data.position.lat
+        const lng = data.position.lng
+        console.log(window.location.pathname);
+        console.log(userPosition);
+
+        if (window.location.pathname !== "/position") {
+          map.setCenter([lng, lat])
+          const curPosMarker = new AMap.Marker({
+            position: [lng, lat],
+            title: '我的定位',
+            map: map,
+            // content:'<div class="marker-route marker-marker-bus-from">新</div>'
+          });
+          curPosMarker.setLabel({
+            offset: new AMap.Pixel(-18, -24),
+            content: "我的定位"
+          });
+          map.add(curPosMarker)
+        }
+        if (userPosition[0] === 0 && userPosition[1] === 0) {
+          setMyMarkerPosition([lng, lat])
+        }
+      }
+
+      function onError(data) {
+        // 定位出错
+      }
+    })
   }
   function startDrive(e) {
     switch (e.target.innerText) {
@@ -774,7 +828,7 @@ function Map(props) {
       </div>}
       {isDrivePanelShow && <div className="drive-friend-panel">
         <div className="drive-friend-close" onClick={() => {
-          window.location = "/"
+          location.reload()
         }}>❌</div>
         <div className="drive-friend-panel-title">正在去找{friendName},距Ta约{driveRoute.distance / 1000}千米</div>
         {driveRoute.steps && driveRoute.steps.map((item, index) => {
@@ -832,10 +886,10 @@ function Map(props) {
             {myMarkerPosition[1] === 0 ? userPosition[1] : myMarkerPosition[1]}
           </span>
         </div>
-        <div className="position-mode-title">在这里更改你的个性签名(用于匹配校友,可选) 最多50字</div>
+        <div className="position-mode-title">更改个性签名(可不填 最多50字)</div>
         <div className="position-mode-title">
           <label htmlFor="signature">个性签名:</label>
-          <input style={{ marginLeft: 20, height: 20, width: 250, fontSize: 18 }} placeholder="快来更改你的个性签名吧！" type="text" id="signature"
+          <input style={{ marginLeft: 20, height: 20, width: 150, fontSize: 18 }} placeholder="快来更改你的个性签名吧！" type="text" id="signature" value={signature}
             onChange={event => {
               setSignature(event.target.value)
             }} /></div>
