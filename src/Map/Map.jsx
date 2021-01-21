@@ -351,10 +351,9 @@ function Map(props) {
         console.log(data.position);
         const lat = data.position.lat
         const lng = data.position.lng
-        console.log(window.location.pathname);
-        console.log(userPosition);
+        const pathname = window.location.pathname
 
-        if (window.location.pathname !== "/position") {
+        if (pathname !== "/position") {
           map.setCenter([lng, lat])
           const curPosMarker = new AMap.Marker({
             position: [lng, lat],
@@ -368,8 +367,21 @@ function Map(props) {
           });
           map.add(curPosMarker)
         }
-        if (userPosition[0] === 0 && userPosition[1] === 0) {
+        if (userPosition[0] === 0 && userPosition[1] === 0 && pathname === '/position') {
           setMyMarkerPosition([lng, lat])
+          map.setCenter([lng, lat])
+          const curPosMarker = new AMap.Marker({
+            position: [lng, lat],
+            title: '我的定位',
+            map: map,
+            // content:'<div class="marker-route marker-marker-bus-from">新</div>'
+          });
+          curPosMarker.setLabel({
+            offset: new AMap.Pixel(-18, -24),
+            content: "我的定位"
+          });
+          map.add(curPosMarker)
+          
         }
       }
 
@@ -748,9 +760,8 @@ function Map(props) {
     let focusFlag = false
     let focusPos = [0, 0]
     nearbyUserList.map(item => {
-      const position = item.position.split(';')
-      const lng = Number(position[0])
-      const lat = Number(position[1])
+      const lng = item.longitude
+      const lat = item.latitude
       const Marker = new AMap.Marker({
         position: [lng, lat],
         map: map,

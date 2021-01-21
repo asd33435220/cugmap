@@ -49,10 +49,9 @@ function NavBar(props) {
                     setStudentId(res.data.student_id)
                     setStudentName(res.data.student_name)
                     setSignature(res.data.signature)
-                    if (res.data.position !== "") {
-                        const position = res.data.position.split(';')
-                        const lng = Number(position[0])
-                        const lat = Number(position[1])
+                    if (res.data.longitude !== 0 && res.data.latitude !== 0) {
+                        const lng = res.data.longitude
+                        const lat = res.data.latitude
                         setUserPosition([lng, lat])
                     }
                 } else if (isLogin) {
@@ -71,6 +70,8 @@ function NavBar(props) {
             })
     }
     async function getPosition() {
+        console.log('heregetPosition');
+        
         const res = await React.$http.get("/user/position")
         console.log("position-res", res);
         if (res.data.code === -2) {
@@ -86,6 +87,7 @@ function NavBar(props) {
         setPanelMessage("已经为你匹配附近的校友,快给他们留言吧!")
         setIsMessageBoxShow(true)
         getMyMessage()
+        setUserPosition([res.data.user_lng, res.data.user_lat])
         setNearbyUserList(res.data.user_list);
         setTimeout(() => {
             setIsPanelShow(false)
@@ -156,9 +158,8 @@ function NavBar(props) {
         let flag = false
         nearbyUserList.map(item => {
             if (item.student_id === friend_id) {
-                const position = item.position.split(';')
-                const lng = Number(position[0])
-                const lat = Number(position[1])
+                const lng = item.longitude
+                const lat = item.latitude
                 myMapObj.setCenter([lng, lat])
                 myMapObj.setZoom(18)
                 myMapObj.setPitch(60)
