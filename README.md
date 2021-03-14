@@ -1,3 +1,12 @@
+# 毕业设计web端
+React Hooks + 高德Javascript API https://developer.amap.com/api/javascript-api/guide/abc/prepare
+
+Node 10.24.0 
+
+请勿关闭cookie
+
+开启定位权限效果更加
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
