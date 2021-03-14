@@ -119,8 +119,6 @@ function NavBar(props) {
     const handleChangePosition = async () => {
         console.log(myMarkerPosition);
         const flag = myMarkerPosition[0] === 0 && myMarkerPosition[1] === 0
-        console.log("signature", signature);
-
         const res = await React.$http.get('/user/update/info', {
             params: {
                 longitude: flag ? userPosition[0] : myMarkerPosition[0],
@@ -197,14 +195,14 @@ function NavBar(props) {
                 })}
             </div>}
             {isPanelShow && <div className="nav-panel">{panelMessage}</div>}
-            <img src={LOGO} className="nav-logo" onClick={() => {
+            <img src={LOGO} className="nav-logo" style={{marginLeft:isPhone?5:40}} onClick={() => {
                 window.open("https://www.cug.edu.cn/", '_blank')
             }} />
-            <div className="nav-main-text">地大地图</div>
+            {!(isPhone && isLogin) && <div className="nav-main-text">地大地图</div>}
             {isLogin && studentName !== "" &&
-                <div className="nav-welcome">
+                <div className="nav-welcome" style={{marginLeft:isPhone?5:40}}>
                     <div className="nav-username"><span style={{ color: "red", fontSize: 20, margin: 0 }}>欢迎回来</span>{studentName}</div>
-                    <div className="nav-user-signature" onClick={() => {
+                    <div className={"nav-user-signature"} onClick={() => {
                         if (signature === "") window.location = "/position"
                     }}>{signature === "" ? "你还没有个性签名喔，快去更新一下吧！" : signature}</div>
                 </div>

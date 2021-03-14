@@ -60,17 +60,10 @@ function Map(props) {
 
   useEffect(() => {
     initMap()
-
     const h1 = document.querySelector('.welcome')
     const author = document.querySelector('.author')
     const colorList = ["red", "green", "yellow", "cyan", "hotpink"]
     let i = 0
-    setInterval(() => {
-      // h1.style.color = colorList[i]
-      author.style.color = colorList[i]
-      i++
-      i = i % 4
-    }, 300)
   }, [])
   function initMap() {
     const AMap = window.AMap
