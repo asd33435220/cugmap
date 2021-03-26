@@ -19,6 +19,7 @@ function router() {
     const [studentName, setStudentName] = useState("")
     const [signature, setSignature] = useState("")
     const [myMapObj, setMyMapObj] = useState(null)
+    const [receiverInfo, setReceiverInfo] = useState({})
 
 
     return (
@@ -43,6 +44,8 @@ function router() {
                 setNearbyUserList={setNearbyUserList}
                 nearbyUserList={nearbyUserList}
                 myMapObj={myMapObj}
+                receiverInfo={receiverInfo}
+                setReceiverInfo={setReceiverInfo}
             />
             {/* <NavLink to="/login">登陆</NavLink> */}
             <Switch>
@@ -67,6 +70,8 @@ function router() {
                         signature={signature}
                         myMapObj={myMapObj}
                         setMyMapObj={setMyMapObj}
+                        receiverInfo={receiverInfo}
+                        setReceiverInfo={setReceiverInfo}
                     />} />
             </Switch>
             <Footer />

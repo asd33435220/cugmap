@@ -25,54 +25,7 @@
   top: 0;
   z-index: 1000;
 
-  .nav-chat-message-box {
-    height: 300px;
-    width: 40%;
-    background-color: black;
-    color: #fff;
-    opacity: .7;
-    z-index: 1001;
-    position: fixed;
-    right: 0;
-    top: 300px;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    
-
-    .nav-chat-message-title {
-      text-align: center;
-      font-size: 24px;
-      color: red;
-    }
-
-    .nav-chat-message-container {
-
-      border-bottom: white 1px solid;
-      margin-bottom: 2px;
-
-      .nav-chat-list-name {
-        font-size: 14px;
-        color: rgb(8, 247, 64);
-
-        .nav-chat-list-username {
-          font-size: 18px;
-          color: hotpink;
-          margin: 0;
-          cursor: pointer;
-        }
-        
-      }
-
-      .nav-chat-list-message {
-        font-size: 20px;
-      }
-
-      .nav-chat-list-time {
-        font-size: 14px;
-        opacity: .6;
-      }
-    }
-  }
+ 
 
   .nav-panel {
     position: absolute;

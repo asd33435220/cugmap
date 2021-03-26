@@ -18,6 +18,8 @@ function Map(props) {
     setSignature,
     setMyMapObj,
     myMapObj,
+    recieverId,
+    setReceiverInfo,
     nearbyUserList } = props
 
   const OLD_TO_NEW_BY_CAR = "老校区至新校区:驾车🚗"
@@ -37,7 +39,6 @@ function Map(props) {
   const [isLoading, setIsLoading] = useState(false)
   const [myMarker, setMyMarker] = useState(null)
   const [isMessageBoxShow, setIsMessageBoxShow] = useState(false)
-  const [recieverId, setReceiverId] = useState("")
   const [isDrivePanelShow, setIsDrivePanelShow] = useState(false)
   const [driveRoute, setDriveRoute] = useState([])//导航去找朋友
   const [friendName, setFriendName] = useState("")
@@ -60,11 +61,13 @@ function Map(props) {
 
   useEffect(() => {
     initMap()
-    const h1 = document.querySelector('.welcome')
-    const author = document.querySelector('.author')
-    const colorList = ["red", "green", "yellow", "cyan", "hotpink"]
-    let i = 0
   }, [])
+
+  useEffect(() => {
+    // if(openTools){
+    //   location.reload()
+    // }
+  }, [openTools])
   function initMap() {
     const AMap = window.AMap
 
@@ -78,8 +81,6 @@ function Map(props) {
       pitch: 0,//地图仰角设定
       lang: 'zh_cn',  //设置地图语言类型
     });
-    console.log("click");
-
     map.on('click', function (ev) {
       // 触发事件的对象
       var target = ev.target;
@@ -374,7 +375,7 @@ function Map(props) {
             content: "我的定位"
           });
           map.add(curPosMarker)
-          
+
         }
       }
 
@@ -770,7 +771,7 @@ function Map(props) {
         map.setCenter([lng, lat]);
         map.setZoom(18)
         map.setPitch(60)
-        leaveMessage(item.student_id)
+        leaveMessage({id:item.student_id,name:item.username})
       });
       MarkerList.push(Marker)
       if (item.setFocus) {
@@ -788,9 +789,9 @@ function Map(props) {
       map.setFitView(); //自适应
     }
   }
-  function leaveMessage(toUserId) {
-    setIsMessageBoxShow(true)
-    setReceiverId(toUserId)
+  function leaveMessage(toUserInfo) {
+    // setIsMessageBoxShow(true)
+    setReceiverInfo(toUserInfo)
   }
   async function sendMessage() {
     const form = {
@@ -840,7 +841,7 @@ function Map(props) {
         })}
       </div>}
       {isLoading && <div className="loading">路径计算中...</div>}
-      {openTools && <div className="box">
+       <div className={openTools?"box":"box-hide"}>
         {isDrive && <div className="drive-panel">
           <div className="panel-title">导航面板
             <span className="panel-close" onClick={() => {
@@ -861,15 +862,13 @@ function Map(props) {
           <button className="west">西校区</button>
           <button className="east">东校区</button>
           <button className="north">北校区</button>
-        </div>
-        <div className="tool-box">
           <button className="distance">距离测量</button>
           <button className="area">面积测量</button>
           <button className="drive" onClick={() => { setIsDrive(true) }}>校区导航</button>
           <button className="tool">关闭工具</button>
         </div>
         <div className="info"></div>
-      </div>}
+      </div>
       {isPositionMode && <div className="position-box">
         <div className="position-mode-title">
           <span style={{ color: "red", fontSize: 23 }}>

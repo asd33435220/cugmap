@@ -1,5 +1,6 @@
 import React, { Component, useState, useEffect } from 'react';
 import LOGO from './images/logo.jpeg';
+import MessageBox from '../MessageBox/MessageBox'
 import './NavBar.scss';
 
 function NavBar(props) {
@@ -22,6 +23,8 @@ function NavBar(props) {
         userPosition,
         setSignature,
         myMapObj,
+        receiverInfo,
+        setReceiverInfo,
     }
         = props
     const isMap = window.location.pathname === "/"
@@ -31,14 +34,7 @@ function NavBar(props) {
     const [isPanelShow, setIsPanelShow] = useState(false)
     const [panelMessage, setPanelMessage] = useState("")
     const [isMessageBoxShow, setIsMessageBoxShow] = useState(false)
-    const [myMessageList, setMyMessageList] = useState([])
-
-    async function getMyMessage() {
-        const res = await React.$http.get("/message/mymessage")
-        console.log("message", res);
-        const messageList = res.data.message_list && res.data.message_list.reverse()
-        setMyMessageList(messageList)
-    }
+    
     function getToken() {
         React.$http.get('/token')
             .then(res => {
@@ -71,7 +67,7 @@ function NavBar(props) {
     }
     async function getPosition() {
         console.log('heregetPosition');
-        
+
         const res = await React.$http.get("/user/position")
         console.log("position-res", res);
         if (res.data.code === -2) {
@@ -86,7 +82,6 @@ function NavBar(props) {
         setIsPanelShow(true)
         setPanelMessage("已经为你匹配附近的校友,快给他们留言吧!")
         setIsMessageBoxShow(true)
-        getMyMessage()
         setUserPosition([res.data.user_lng, res.data.user_lat])
         setNearbyUserList(res.data.user_list);
         setTimeout(() => {
@@ -105,7 +100,6 @@ function NavBar(props) {
             setIsGamMode(true)
             setOpenTools(false)
             getPosition()
-            getMyMessage()
         }
         getToken()
         if (document.body.clientWidth < 1000) {
@@ -136,7 +130,6 @@ function NavBar(props) {
             setTimeout(() => {
                 window.location = "/gam"
                 setIsMessageBoxShow(true)
-                getMyMessage()
             }, 2000)
         } else {
             setPanelMessage(res.data.message + "，请重试")
@@ -179,28 +172,19 @@ function NavBar(props) {
     }
     return (
         <div className="nav-container" >
-            {isMessageBoxShow && <div className="nav-chat-message-box">
-                <div className="nav-chat-message-title">{myMessageList ? "消息列表" : "还没有消息"}</div>
-                {myMessageList && myMessageList.map((item, index) => {
-                    return <div className="nav-chat-message-container" key={item.SendTime}>
-                        <div className="nav-chat-list-name" onClick={() => {
-                            getFriendInfo(item.SenderId)
-                        }}>
-                            <span className="nav-chat-list-username">{item.SenderName}</span>
-                            给你留言:</div>
-                        <div className="nav-chat-list-message">{item.Message}</div>
-                        <div className="nav-chat-list-time">{item.SendTime}</div>
-
-                    </div>
-                })}
-            </div>}
+            {isMessageBoxShow && <MessageBox
+                receiverInfo={receiverInfo}
+                setReceiverInfo={setReceiverInfo}
+                studentId={studentId}
+                getFriendInfo={getFriendInfo}
+            />}
             {isPanelShow && <div className="nav-panel">{panelMessage}</div>}
-            <img src={LOGO} className="nav-logo" style={{marginLeft:isPhone?5:40}} onClick={() => {
+            <img src={LOGO} className="nav-logo" style={{ marginLeft: isPhone ? 5 : 40 }} onClick={() => {
                 window.open("https://www.cug.edu.cn/", '_blank')
             }} />
             {!(isPhone && isLogin) && <div className="nav-main-text">地大地图</div>}
             {isLogin && studentName !== "" &&
-                <div className="nav-welcome" style={{marginLeft:isPhone?5:40}}>
+                <div className="nav-welcome" style={{ marginLeft: isPhone ? 5 : 40 }}>
                     <div className="nav-username"><span style={{ color: "red", fontSize: 20, margin: 0 }}>欢迎回来</span>{studentName}</div>
                     <div className={"nav-user-signature"} onClick={() => {
                         if (signature === "") window.location = "/position"

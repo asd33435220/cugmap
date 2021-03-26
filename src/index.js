@@ -6,7 +6,7 @@ import axios from 'axios';
 import qs from 'qs';
 React.$http = axios
 React.$qs = qs
-axios.defaults.baseURL = 'http://120.77.144.37:9999';
+axios.defaults.baseURL = 'http://192.168.8.213:9999';
 axios.interceptors.request.use(
   config => {
     if (localStorage.getItem('token')) { //判断token是否存在

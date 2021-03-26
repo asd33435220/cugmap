@@ -5,7 +5,7 @@
 }
 
 #container {
-  height: 70vh;
+  height: 80vh;
   width: 100%;
   position: relative;
 }
@@ -97,16 +97,20 @@
   font-size: 16px;
 }
 
-button {
-  background-color: #fff;
-  border-radius: 3px;
-  border: 2px solid red;
-  margin: 0 5px;
-  font-size: 13px;
-}
+
 
 .module-box {
   margin-bottom: 5px;
+  button {
+    cursor: pointer;
+    margin: 0 5px;
+    font-size: 16px;
+  }
+}
+
+.box-hide {
+  visibility: hidden;
+  height: 0;
 }
 
 .box {
