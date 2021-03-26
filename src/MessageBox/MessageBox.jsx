@@ -14,15 +14,70 @@ function MessageBox(props) {
     const [inputMessage, setInputMessage] = useState('')
     const [receiverList, setReceiverList] = useState([])
     const [senderList, setSenderList] = useState([])
+    const [messageList, setMessageList] = useState([])
     const [totalNewMessage, setTotalNewMessage] = useState(0)
 
     async function getMyMessage() {
-        const res = await React.$http.get("/message/mymessage")
-        const ReceiverList = res.data.receiver_message_list
-        const SenderList = res.data.sender_message_list
-        setReceiverList(ReceiverList)
-        setSenderList(SenderList)
+        const res = await React.$http.get("/message/allmymessage")
+        console.log('res', res);
+        setMessageList(res.data.message_list)
+        // const ReceiverList = res.data.receiver_message_list
+        // const SenderList = res.data.sender_message_list
+        // setReceiverList(ReceiverList)
+        // setSenderList(SenderList)
     }
+
+    useEffect(() => {
+        const userObj = {}
+        const newUserList = []
+        let total = 0
+        messageList && messageList.map(item => {
+            const {
+                SenderId,
+                Message,
+                SenderName,
+                ReceiverId,
+                ReceiverName,
+                SendTime,
+                SendTimeStr,
+                IsRead }
+                = item
+            // console.log(item);
+            if (SenderId === studentId) {
+                if (userObj[ReceiverId]) {
+                    userObj[ReceiverId].messageList.push({ Message, SendTime, SendTimeStr, isSendFromMe: true, isRead: IsRead })
+                } else {
+                    userObj[ReceiverId] = {
+                        senderId: ReceiverId, name: ReceiverName,
+                        messageList: [{ Message, SendTime, SendTimeStr, isRead: IsRead }],
+                    }
+                }
+            } else {
+                if (!userObj[SenderId]) {
+                    userObj[SenderId] = {
+                        senderId: SenderId, name: SenderName,
+                        messageList: [{ Message, SendTime, SendTimeStr, isRead: IsRead }],
+                    }
+                    if (!IsRead) {
+                        userObj[SenderId].unReadMessageCount = 1
+                        total++
+                    }
+                } else {
+                    userObj[SenderId].messageList.push({ Message, SendTime, SendTimeStr, isRead: IsRead })
+                    if (!IsRead) {
+                        total++
+                        userObj[SenderId].unReadMessageCount ? userObj[SenderId].unReadMessageCount++ : userObj[SenderId].unReadMessageCount = 1
+                    }
+                }
+            }
+        })
+        for (let key in userObj) {
+            newUserList.push(userObj[key])
+        }
+        console.log('newUserList', newUserList);
+        newUserList.length > 0 && quickSortUserList(newUserList)
+        setUserList(newUserList)
+    }, [messageList])
 
     useEffect(() => {
         getMyMessage()
@@ -98,9 +153,7 @@ function MessageBox(props) {
             newUserList.push(userObj[key])
         }
         mergeUserByTime(newUserList)
-        newUserList.length >0 && quickSortUserList(newUserList)
-        console.log('newUserList',newUserList);
-
+        newUserList.length > 0 && quickSortUserList(newUserList)
         setUserList(newUserList)
     }, [receiverList, senderList])
 
@@ -126,7 +179,7 @@ function MessageBox(props) {
     }
 
     const updateMessage = async () => {
-        if(inputMessage.trim()==""){
+        if (inputMessage.trim() == "") {
             alert('请输入内容')
             return
         }
@@ -273,20 +326,20 @@ const quickSort = (userList, left, right) => {
 }
 
 const findPivot = (userList, left, right) => {
-    let pivot = userList[left].messageList[userList[left].messageList.length-1].SendTime
-    while(left<right){
-        while(left<right && userList[right].messageList[userList[right].messageList.length-1].SendTime<=pivot){
+    let pivot = userList[left].messageList[userList[left].messageList.length - 1].SendTime
+    while (left < right) {
+        while (left < right && userList[right].messageList[userList[right].messageList.length - 1].SendTime <= pivot) {
             right--
         }
-        swap(userList,left,right)
-        while(left<right && userList[left].messageList[userList[left].messageList.length-1].SendTime>=pivot){
+        swap(userList, left, right)
+        while (left < right && userList[left].messageList[userList[left].messageList.length - 1].SendTime >= pivot) {
             left++
         }
-        swap(userList,left,right)   
+        swap(userList, left, right)
     }
     return left
 }
-const swap = (arr,left,right)=>{
+const swap = (arr, left, right) => {
     const tem = arr[left]
     arr[left] = arr[right]
     arr[right] = tem
