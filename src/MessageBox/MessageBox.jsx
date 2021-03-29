@@ -40,30 +40,33 @@ function MessageBox(props) {
                 ReceiverName,
                 SendTime,
                 SendTimeStr,
-                IsRead }
+                IsRead,
+                PlaceCode,
+            }
                 = item
             // console.log(item);
             if (SenderId === studentId) {
                 if (userObj[ReceiverId]) {
-                    userObj[ReceiverId].messageList.push({ Message, SendTime, SendTimeStr, isSendFromMe: true, isRead: IsRead })
+                    PlaceCode,
+                        userObj[ReceiverId].messageList.push({ Message, SendTime, SendTimeStr, isSendFromMe: true, isRead: IsRead, placeCode: PlaceCode })
                 } else {
                     userObj[ReceiverId] = {
                         senderId: ReceiverId, name: ReceiverName,
-                        messageList: [{ Message, SendTime, SendTimeStr, isRead: IsRead }],
+                        messageList: [{ Message, SendTime, SendTimeStr, isRead: IsRead, placeCode: PlaceCode }],
                     }
                 }
             } else {
                 if (!userObj[SenderId]) {
                     userObj[SenderId] = {
                         senderId: SenderId, name: SenderName,
-                        messageList: [{ Message, SendTime, SendTimeStr, isRead: IsRead }],
+                        messageList: [{ Message, SendTime, SendTimeStr, isRead: IsRead, placeCode: PlaceCode }],
                     }
                     if (!IsRead) {
                         userObj[SenderId].unReadMessageCount = 1
                         total++
                     }
                 } else {
-                    userObj[SenderId].messageList.push({ Message, SendTime, SendTimeStr, isRead: IsRead })
+                    userObj[SenderId].messageList.push({ Message, SendTime, SendTimeStr, isRead: IsRead, placeCode: PlaceCode })
                     if (!IsRead) {
                         total++
                         userObj[SenderId].unReadMessageCount ? userObj[SenderId].unReadMessageCount++ : userObj[SenderId].unReadMessageCount = 1
@@ -112,7 +115,7 @@ function MessageBox(props) {
             if (!userObj[SenderId]) {
                 userObj[SenderId] = {
                     senderId: SenderId, name: SenderName,
-                    ReceiverMessageList: [{ Message, SendTime, SendTimeStr, isRead: IsRead }],
+                    ReceiverMessageList: [{ Message, SendTime, SendTimeStr, isRead: IsRead, placeCode: PlaceCode }],
                     SenderMessageList: []
                 }
                 if (!IsRead) {
@@ -120,7 +123,7 @@ function MessageBox(props) {
                     total++
                 }
             } else {
-                userObj[SenderId].ReceiverMessageList.push({ Message, SendTime, SendTimeStr, isRead: IsRead })
+                userObj[SenderId].ReceiverMessageList.push({ Message, SendTime, SendTimeStr, isRead: IsRead, placeCode: PlaceCode })
                 if (!IsRead) {
                     total++
                     userObj[SenderId].unReadMessageCount ? userObj[SenderId].unReadMessageCount++ : userObj[SenderId].unReadMessageCount = 1
@@ -183,16 +186,28 @@ function MessageBox(props) {
             alert('请输入内容')
             return
         }
+        let placeCode = 0
+        let message = inputMessage
+        if (inputMessage[0] === '@') {
+            const re = /^@[0-9]+@/
+            let res = re.exec(inputMessage)
+            if (res) {
+                const index = inputMessage.indexOf('@', 1)
+                placeCode = inputMessage.slice(1, index)
+                message = inputMessage.slice(index + 1)
+            }
+        }
         const newInfo = { ...partnerInfo }
         const date = new Date()
         const sendTime = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
-        newInfo.messageList.push({ Message: inputMessage, isSendFromMe: true, SendTimeStr: sendTime, SendTime: date.getTime() })
+        newInfo.messageList.push({ Message: message, isSendFromMe: true, SendTimeStr: sendTime, SendTime: date.getTime(),placeCode })
         setPartnerInfo(newInfo)
         setInputMessage('')
         const form = {
             receiver_id: newInfo.senderId,
-            message: inputMessage,
+            message: message,
             sender_id: studentId,
+            place_code: placeCode,
         }
         const data = React.$qs.stringify(form)
         const res = await React.$http.post("/message/leave", data)
@@ -213,8 +228,9 @@ function MessageBox(props) {
                     {totalNewMessage}
                 </div>}
                 {!partnerInfo.name ? <>
-                    <div className="chat-message-title">{receiverList ? "消息盒子" : "你暂时还没有消息"}</div>
-                    <a href="http://www.zhuyuchen.cn/chat" className="chat-room" target="_blank">点我进入聊天室 邀请朋友一起参加群聊</a>
+                    <div className="chat-message-title">{messageList ? "消息盒子" : "你暂时还没有消息"}</div>
+                    {!messageList && <div className="chat-tips">小提示:点击地图中其他人的图标可以向他发起对话喔！</div>}
+                    <a href="http://www.zhuyuchen.cn/chat" className="chat-room" target="_blank">点我进入聊天室看看 邀请朋友一起参加群聊</a>
                     {userList.length > 0 && <div className="chat-user-list-container">
                         {userList.map(item => {
                             return (
@@ -255,13 +271,20 @@ function MessageBox(props) {
                                         {item.isSendFromMe ? <div className="send-box">
                                             <div className="send-image" />
                                             <div className="send-message-icon" />
-                                            <div className="send-message">{item.Message}</div>
+
+                                            {item.placeCode === 0 ?
+                                                <div className="send-message">{item.Message}</div>
+                                                :
+                                                <div className="send-message-with-placecode">{item.Message}</div>}
                                         </div>
                                             :
                                             <div className="receive-box">
                                                 <div className="receive-image" />
                                                 <div className="receive-message-icon" />
-                                                <div className="receive-message">{item.Message}</div>
+                                                {item.placeCode === 0 ?
+                                                    <div className="receive-message">{item.Message}</div>
+                                                    :
+                                                    <div className="receive-message-with-placecode">{item.Message}</div>}
                                             </div>}
 
                                     </div>

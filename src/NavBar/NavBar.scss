@@ -1,11 +1,11 @@
 @keyframes slidedown {
 
   0% {
-    height: 0;
+    right: -200px;
   }
 
   100% {
-    height: 200px;
+    right: 0;
   }
 }
 
@@ -14,7 +14,7 @@
   box-sizing: border-box;
   width: 100%;
   background-color: #fff;
-  border-top: 3px solid #f48024;
+  border-top: 3px solid #0574d0;
   border-bottom: 1px solid #ccc;
   height: 80px;
   display: flex;
@@ -62,7 +62,7 @@
       font-size: 13px;
       color: black;
       opacity: .5;
-      max-width: 300px;
+      max-width: 400px;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
@@ -74,6 +74,7 @@
     flex-shrink: none;
     width: 60px;
     height: 60px;
+    cursor: pointer;
   }
 
   .nav-main-text {
@@ -82,7 +83,7 @@
     overflow: hidden;
     font-size: 30px;
     margin-left: 40px;
-    flex-shrink: none;
+    flex-shrink: 3;
 
   }
 
@@ -119,15 +120,18 @@
     .nav-right-phone-more-pannel {
       width: 100px;
       position: absolute;
-      top: 80px;
-      animation: slidedown .2s ease-in-out forwards;
+      animation: slidedown .2s linear forwards;
+      height: auto;
       display: flex;
+      top: 80px;
       flex-direction: column;
+      box-sizing: border-box;
       background-color: #fff;
-      border: 2px #f48024 solid;
+      border: 2px #0574d0 solid;
 
       .nav-right-phone-more-pannel-line {
         width: 100px;
+        box-sizing: border-box;
         border-bottom: 2px solid #ccc;
         height: 25%;
         // height: 40px;
@@ -141,45 +145,53 @@
   .nav-right {
     margin-left: auto;
     margin-right: 20px;
+    flex-shrink: 0;
     display: flex;
     flex-direction: row;
     height: 80px;
     align-items: center;
-    width: 450px;
+    width: 550px;
     justify-content: space-around;
 
     .nav-right-button {
       cursor: pointer;
-      width: 100px;
-      height: 60px;
-      border: 2px red solid;
-      border-radius: 3px;
+      width: 80px;
+      height: 45px;
       text-align: center;
-      line-height: 60px;
-      font-size: 18px;
+      line-height: 45px;
+      font-size: 16px;
+      border-radius: 20px;
+    }
+
+    .nav-right-button:hover {
+      color: #0574d0;
+      font-weight: 600;
     }
   }
 
   .nav-right-goback {
     margin-left: auto;
     margin-right: 20px;
+    flex-shrink: 0;
     display: flex;
     flex-direction: row;
     height: 80px;
     align-items: center;
-    // width: 120px;
     justify-content: space-around;
 
     .nav-right-button {
       cursor: pointer;
-      width: 130px;
-      height: 60px;
-      border: 2px red solid;
-      border-radius: 3px;
+      height: 45px;
+      margin: 0 15px;
       text-align: center;
-      line-height: 60px;
-      font-size: 18px;
-      margin: 0 10px;
+      line-height: 45px;
+      font-size: 16px;
+      border-radius: 20px;
+    }
+
+    .nav-right-button:hover {
+      color: #0574d0;
+      font-weight: 600;
     }
   }
 }

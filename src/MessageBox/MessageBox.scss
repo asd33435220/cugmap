@@ -26,7 +26,7 @@
   height: 30px;
   position: fixed;
   top: 200px;
-  background-image: url(../NavBar/images/left.png);
+  background-image: url(../NavBar/images/left.svg);
   background-size: contain;
 }
 
@@ -54,12 +54,12 @@
 
   .chat-right-button {
     z-index: 999;
-    background-image: url(../NavBar/images/right.png);
+    background-image: url(../NavBar/images/right.svg);
     background-size: 100% 100%;
     cursor: pointer;
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     top: 5px;
     left: 5px;
   }
@@ -71,8 +71,8 @@
       position: absolute;
       right: 5px;
       top: 5px;
-      width: 20px;
-      height: 20px;
+      width: 30px;
+      height: 30px;
       border-radius: 10px;
       text-align: center;
       line-height: 20px;
@@ -83,6 +83,13 @@
     font-size: 24px;
     color: black;
     height: 40px;
+  }
+
+  .chat-tips {
+      font-size: 18px;
+      color: black;
+      font-weight: 700;
+      margin: 15px;
   }
 
   .chat-room {
@@ -116,7 +123,7 @@
         height: 50px;
         top: 15px;
         left: 10px;
-        background-image: url(../NavBar/images/user.jpeg);
+        background-image: url(../NavBar/images/chat-user.svg);
         background-size: 100% 100%;
       }
 
@@ -167,9 +174,9 @@
       position: absolute;
       right: 5px;
       top: 5px;
-      width: 20px;
-      height: 20px;
-      background-image: url(../NavBar/images/back.png);
+      width: 30px;
+      height: 30px;
+      background-image: url(../NavBar/images/back.svg);
       background-size: contain;
     }
   
@@ -218,7 +225,7 @@
             flex-shrink: 0;
             width: 36px;
             height: 36px;
-            background-image: url(../NavBar/images/user.jpeg);
+            background-image: url(../NavBar/images/user.svg);
             background-size: contain;
           }
 
@@ -243,6 +250,18 @@
             box-sizing: border-box;
 
           }
+
+          .receive-message-placecode {
+            font-style: oblique;
+            font-weight: 700;
+            max-width: 200px;
+            margin-left: 6px;
+            background-color: rgba(221, 225, 228, .808);
+            padding: 8px;
+            border-radius: 12px;
+            word-break: break-all;
+            box-sizing: border-box;
+          }
         }
 
         .send-box {
@@ -254,7 +273,7 @@
           .send-image {
             width: 36px;
             height: 36px;
-            background-image: url(../NavBar/images/user.jpeg);
+            background-image: url(../NavBar/images/my-user.svg);
             background-size: contain;
           }
 
@@ -270,6 +289,20 @@
           }
 
           .send-message {
+            max-width: 200px;
+            margin-right: 6px;
+            background-color: rgba(80, 226, 13, 0.808);
+            padding: 8px;
+            border-radius: 12px;
+            word-break: break-all;
+            box-sizing: border-box;
+
+          }
+
+          .send-message-with-placecode {
+            cursor: pointer;
+            font-style: oblique;
+            font-weight: 700;
             max-width: 200px;
             margin-right: 6px;
             background-color: rgba(80, 226, 13, 0.808);

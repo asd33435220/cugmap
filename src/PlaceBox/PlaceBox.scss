@@ -1,0 +1,335 @@
+@keyframes close {
+
+  0% {
+    right: 0;
+  }
+
+  100% {
+    right: -385px;
+  }
+}
+
+@keyframes open {
+
+  0% {
+    right: -385px;
+  }
+
+  100% {
+    right: 0;
+  }
+}
+
+@keyframes select {
+
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.place-close {
+  right: 0;
+  width: 30px;
+  height: 30px;
+  position: fixed;
+  top: 235px;
+  background-image: url(../NavBar/images/left.svg);
+  background-size: contain;
+}
+
+.place-close-animation {
+  animation: close .4s ease-in-out ;
+  right: -385px;
+}
+
+.place-open-animation {
+  animation: open .4s ease-in-out ;
+  right: 0;
+}
+
+.place-box {
+  height: 410px;
+  width: 350px;
+  background-color: white;
+  color: #fff;
+  z-index: 1001;
+  position: fixed;
+  top: 235px;
+  overscroll-behavior-y: none;
+  overflow: hidden;
+  border: 1px black solid;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+
+
+  .place-right-button {
+    z-index: 999;
+    background-image: url(../NavBar/images/right.svg);
+    background-size: 100% 100%;
+    cursor: pointer;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 5px;
+    left: 5px;
+  }
+
+  .place-title {
+    text-align: center;
+    font-size: 24px;
+    color: black;
+    height: 40px;
+  }
+
+  .place-input {
+    width: 80%;
+    height: 20px;
+    margin-bottom: 5px;
+  }
+
+  .place-position {
+    color: black;
+  }
+
+  .place-subtitle {
+    font-size: 20px;
+    color: black;
+  }
+
+  .place-radio-group {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+
+    .place-radio {
+      cursor: pointer;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 100%;
+
+      .place-radio-button {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: transparent;
+        border: 2px solid black;
+      }
+
+      .place-radio-text {
+        margin-left: 4px;
+        color: black;
+        font-size: 18px;
+      }
+
+      .place-radio-img-food {
+        width: 24px;
+        height: 24px;
+        background-image: url(../images/food.svg);
+        background-size: contain;
+      }
+
+      .place-radio-img-fun {
+        width: 24px;
+        height: 24px;
+        background-image: url(../images/fun.svg);
+        background-size: contain;
+      }
+
+      .place-radio-img-infra {
+        width: 24px;
+        height: 24px;
+        background-image: url(../images/infra.svg);
+        background-size: contain;
+      }
+    }
+
+    .place-radio-selected {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 100%;
+      
+
+      .place-radio-button {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: transparent;
+        border: 2px solid #0574d0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .place-radio-button-inside {
+          animation: select .2s ease-in-out forwards;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background-color: #0574d0;
+        }
+      }
+
+      .place-radio-text {
+        margin-left: 4px;
+        color: #0574d0;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .place-radio-img-food {
+        width: 24px;
+        height: 24px;
+        background-image: url(../images/food-selected.svg);
+        background-size: contain;
+      }
+
+      .place-radio-img-fun {
+        width: 24px;
+        height: 24px;
+        background-image: url(../images/fun-selected.svg);
+        background-size: contain;
+      }
+
+      .place-radio-img-infra {
+        width: 24px;
+        height: 24px;
+        background-image: url(../images/infra-selected.svg);
+        background-size: contain;
+      }
+    }
+  }
+
+  .place-star-box {
+    width: 70%;
+    height: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+    .place-star-score {
+      background-image: url(../images/star-score.svg);
+      width: 30px;
+      height: 30px;
+      background-size: contain;
+      cursor: pointer;
+    }
+
+    .place-star {
+      background-image: url(../images/star.svg);
+      width: 30px;
+      height: 30px;
+      background-size: contain;
+      cursor: pointer;
+    }
+  }
+
+  .place-line {
+    width: 100%;
+    height: 2px;
+    background-color: #ccc;
+  }
+  
+  .place-next-page {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: auto;
+
+    color: #ccc;
+    font-size: 20px;
+    cursor: pointer;
+
+    .place-next-page-img {
+      width: 20px;
+      height: 20px;
+      background-image: url(../images/right-circle.svg);
+      background-size: contain;
+    }
+  }
+
+
+  .place-next-page:hover {
+    color: #0574d0;
+    font-weight: 700;
+  }
+  
+
+  .place-command {
+    resize: none;
+    width: 80%;
+    height: 52px;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .place-bottom {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+
+    .place-preview {
+      color: #ccc;
+      font-size: 20px;
+      font-weight: 400;
+      cursor: pointer;
+    }
+
+    .place-preview:hover {
+      color: #0574d0;
+      font-weight: 700;
+    }
+
+    .place-commit {
+      color: #ccc;
+      font-size: 20px;
+      font-weight: 400;
+      cursor: pointer;
+    }
+
+    .place-commit:hover {
+      color: #0574d0;
+      font-weight: 700;
+    }
+
+    .place-prev-page {
+      align-items: center;
+      color: #ccc;
+      font-size: 20px;
+      font-weight: 400;
+      cursor: pointer;
+      display: flex;
+      flex-direction: row;
+  
+      .place-prev-page-img {
+        width: 20px;
+        height: 20px;
+        background-image: url(../images/left-circle.svg);
+        background-size: contain;
+      }
+    }
+
+    .place-prev-page:hover {
+      color: #0574d0;
+      font-weight: 700;
+    }
+  }
+
+
+
+}
+
+

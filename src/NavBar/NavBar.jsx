@@ -1,6 +1,7 @@
 import React, { Component, useState, useEffect } from 'react';
 import LOGO from './images/logo.jpeg';
 import MessageBox from '../MessageBox/MessageBox'
+import PlaceBox from '../PlaceBox/PlaceBox'
 import './NavBar.scss';
 
 function NavBar(props) {
@@ -8,6 +9,8 @@ function NavBar(props) {
         openTools,
         isPositionMode,
         setIsPositionMode,
+        isFunMode,
+        setIsFunMode,
         setOpenTools,
         myMarkerPosition,
         isGamMode,
@@ -25,16 +28,32 @@ function NavBar(props) {
         myMapObj,
         receiverInfo,
         setReceiverInfo,
+        isPhone,
+        setIsPhone,
+        isAddPlaceMode,
+        setIsAddPlaceMode,
+        placePosition,
+        previewPlaceMessage,
+        setPreviewPlaceMessage,
     }
         = props
     const isMap = window.location.pathname === "/"
-    const [isPhone, setIsPhone] = useState(false)
     const [isLogin, setIsLogin] = useState(false)
     const [isMore, setIsMore] = useState(false)
     const [isPanelShow, setIsPanelShow] = useState(false)
     const [panelMessage, setPanelMessage] = useState("")
     const [isMessageBoxShow, setIsMessageBoxShow] = useState(false)
-    
+
+    const showToast = (message, time=2000, url) => {
+        setPanelMessage(message)
+        setIsPanelShow(true)
+        setTimeout(() => {
+            url && (window.location = url)
+            setPanelMessage('')
+            setIsPanelShow(false)
+        }, time)
+    }
+
     function getToken() {
         React.$http.get('/token')
             .then(res => {
@@ -71,35 +90,32 @@ function NavBar(props) {
         const res = await React.$http.get("/user/position")
         console.log("position-res", res);
         if (res.data.code === -2) {
-            setIsPanelShow(true)
-            setPanelMessage(res.data.message)
-            setTimeout(() => {
-                setIsGamMode(false)
-                setIsPositionMode(true)
-                window.location = "/position"
-            }, 2000)
+            showToast(res.data.message, 2000, "/position")
         }
-        setIsPanelShow(true)
-        setPanelMessage("已经为你匹配附近的校友,快给他们留言吧!")
+        showToast("已经为你匹配附近的校友,快给他们留言吧!", 2000)
+        setIsGamMode(true)
         setIsMessageBoxShow(true)
         setUserPosition([res.data.user_lng, res.data.user_lat])
         setNearbyUserList(res.data.user_list);
-        setTimeout(() => {
-            setIsPanelShow(false)
-        }, 2000)
 
     }
     useEffect(() => {
         const pathname = window.location.pathname
         if (pathname === "/position") {
             setIsPositionMode(true)
-            setOpenTools(false)
+            setOpenTools(true)
             setNearbyUserList([])
             setIsMessageBoxShow(false)
         } else if (pathname === "/gam") {
             setIsGamMode(true)
-            setOpenTools(false)
+            setOpenTools(true)
             getPosition()
+        } else if (pathname === "/fun") {
+            setIsFunMode(true)
+            setOpenTools(true)
+        } else if (pathname === "/addplace") {
+            setIsAddPlaceMode(true)
+            setOpenTools(true)
         }
         getToken()
         if (document.body.clientWidth < 1000) {
@@ -109,6 +125,9 @@ function NavBar(props) {
     const handleLogout = () => {
         localStorage.removeItem("token")
         getToken()
+    }
+    const handleAddPlace = async () => {
+
     }
     const handleChangePosition = async () => {
         console.log(myMarkerPosition);
@@ -126,13 +145,9 @@ function NavBar(props) {
             setIsPanelShow(false)
         }, 2000)
         if (res.data.code === 1) {
-            setPanelMessage(res.data.message + ",即将跳转社交模式,快跟附近的校友聊天吧！")
-            setTimeout(() => {
-                window.location = "/gam"
-                setIsMessageBoxShow(true)
-            }, 2000)
+            showToast(res.data.message + ",即将跳转社交模式,快跟附近的校友聊天吧！", 2000, "/gam")
         } else {
-            setPanelMessage(res.data.message + "，请重试")
+            showToast(res.data.message + ",请重试", 2000)
         }
 
     }
@@ -178,6 +193,12 @@ function NavBar(props) {
                 studentId={studentId}
                 getFriendInfo={getFriendInfo}
             />}
+            {isAddPlaceMode && <PlaceBox
+                previewPlaceMessage={previewPlaceMessage}
+                setPreviewPlaceMessage={setPreviewPlaceMessage}
+                showToast={showToast}
+                isPhone={isPhone}
+                placePosition={placePosition} />}
             {isPanelShow && <div className="nav-panel">{panelMessage}</div>}
             <img src={LOGO} className="nav-logo" style={{ marginLeft: isPhone ? 5 : 40 }} onClick={() => {
                 window.open("https://www.cug.edu.cn/", '_blank')
@@ -206,17 +227,36 @@ function NavBar(props) {
                                 </div>
                                 {isMore && (
                                     <div className="nav-right-phone-more-pannel">
-                                        <div className="nav-right-phone-more-pannel-line"
+                                        {isFunMode && <div className="nav-right-phone-more-pannel-line">美食</div>}
+                                        {isFunMode && <div className="nav-right-phone-more-pannel-line">娱乐</div>}
+                                        {isFunMode && <div className="nav-right-phone-more-pannel-line">基础设施</div>}
+                                        {isFunMode && <div className="nav-right-phone-more-pannel-line" onClick={() => {
+                                            setIsAddPlaceMode(true)
+                                            window.location = "/addplace"
+                                        }}>新增地点</div>}
+                                        {isAddPlaceMode && <div className="nav-right-phone-more-pannel-line"
                                             onClick={() => {
-                                                window.location = "/"
+                                                handleAddPlace()
                                                 setIsMore(false)
-                                            }}>回到地图</div>
+                                            }}>保存地点信息
+                                        </div>}
                                         {isPositionMode && <div className="nav-right-phone-more-pannel-line"
                                             onClick={() => {
                                                 handleChangePosition()
                                                 setIsMore(false)
                                             }}>保存我的信息
                                         </div>}
+                                        <div className="nav-right-phone-more-pannel-line"
+                                            onClick={() => {
+                                                setIsMore(false)
+                                                setOpenTools(!openTools)
+                                            }}> {openTools ? "关闭" : "打开"}工具栏</div>
+                                        <div className="nav-right-phone-more-pannel-line"
+                                            onClick={() => {
+                                                window.location = "/"
+                                                setIsMore(false)
+                                            }}>回到地图</div>
+
                                         {/* <div className="nav-right-phone-more-pannel-line"></div> */}
                                         <div className="nav-right-phone-more-pannel-line"></div>
                                     </div>
@@ -224,17 +264,37 @@ function NavBar(props) {
                             </div>
 
                         ) : (
-                                <div className="nav-right-goback">
-                                    <div className="nav-right-button" onClick={() => {
-                                        window.location = "/"
-                                    }}>回到地图
-                                </div>
-                                    {isPositionMode && <div className="nav-right-button" onClick={() => {
-                                        handleChangePosition()
-                                    }}>保存我的信息
+                            <div className="nav-right-goback">
+                                {isFunMode && <div className="nav-right-button">美食</div>}
+                                {isFunMode && <div className="nav-right-button">娱乐</div>}
+                                {isFunMode && <div className="nav-right-button">基础设施</div>}
+
+                                {isFunMode && <div className="nav-right-button" onClick={() => {
+                                    setIsAddPlaceMode(true)
+                                    window.location = "/addplace"
+                                }}>新增地点</div>}
+                                {isAddPlaceMode && <div className="nav-right-button"
+                                    onClick={() => {
+                                        handleAddPlace()
+                                        setIsMore(false)
+                                    }}>保存地点信息
+                                        </div>}
+                                {isPositionMode && <div className="nav-right-button" onClick={() => {
+                                    handleChangePosition()
+                                }}>保存我的信息
                                 </div>}
+                                <div className="nav-right-button"
+                                    onClick={() => {
+                                        setIsMore(false)
+                                        setOpenTools(!openTools)
+                                    }}> {openTools ? "关闭" : "打开"}工具栏</div>
+                                <div className="nav-right-button" onClick={() => {
+                                    window.location = "/"
+                                }}>回到地图
                                 </div>
-                            )}
+
+                            </div>
+                        )}
                     </>
                 )
             }
@@ -252,13 +312,16 @@ function NavBar(props) {
                             </div>
                             {isMore && (
                                 <div className="nav-right-phone-more-pannel">
+                                    {isLogin && <div className="nav-right-phone-more-pannel-line" onClick={() => {
+                                        window.location = "/fun"
+                                        setIsFunMode(true)
+                                    }}> 吃喝玩乐</div>}
                                     <div className="nav-right-phone-more-pannel-line"
                                         onClick={() => {
                                             setIsMore(false)
                                             if (isLogin) {
                                                 if (userPosition[0] !== 0 && userPosition[0] !== 0) {
                                                     window.location = "/gam"
-
                                                     setIsGamMode(true)
                                                 } else {
                                                     setIsPanelShow(true)
@@ -288,47 +351,48 @@ function NavBar(props) {
                                             setIsMore(false)
                                             setOpenTools(!openTools)
                                         }}> {openTools ? "关闭" : "打开"}工具栏</div>
-                                    {<div className="nav-right-phone-more-pannel-line"
-                                        onClick={() => {
-                                            setIsMore(false)
-                                            handleLogout()
-                                        }}> {isLogin ? "退出登陆" : "尽情期待"}</div>}
+
                                 </div>
                             )}
                         </div>
                     ) : (
-                            <div className="nav-right">
-                                <div className="nav-right-button" onClick={() => {
-                                    if (isLogin) {
-                                        if (userPosition[0] !== 0 && userPosition[0] !== 0) {
-                                            window.location = "/gam"
-                                            setIsGamMode(true)
-                                        } else {
-                                            window.location = "/position"
-                                        }
+                        <div className="nav-right">
+                            {isLogin && <div className="nav-right-button" onClick={() => {
+                                window.location = "/fun"
+                                setIsFunMode(true)
+                            }}> 吃喝玩乐</div>}
+                            <div className="nav-right-button" onClick={() => {
+                                if (isLogin) {
+                                    if (userPosition[0] !== 0 && userPosition[0] !== 0) {
+                                        window.location = "/gam"
+                                        setIsGamMode(true)
                                     } else {
-                                        window.location = "/register"
+                                        window.location = "/position"
                                     }
-                                }}>{isLogin ? '我的社交' : '注册'}</div>
-                                <div className="nav-right-button"
-                                    onClick={() => {
-                                        if (isLogin) {
-                                            window.location = "/position"
-                                            setIsPositionMode(true)
+                                } else {
+                                    window.location = "/register"
+                                }
+                            }}>{isLogin ? '我的社交' : '注册'}</div>
+                            <div className="nav-right-button"
+                                onClick={() => {
+                                    if (isLogin) {
+                                        window.location = "/position"
+                                        setIsPositionMode(true)
 
-                                        } else {
-                                            window.location = "/login"
-                                        }
-                                    }}
-                                >{isLogin ? '修改信息' : '登陆'}</div>
-                                <div className="nav-right-button" onClick={() => {
-                                    setOpenTools(!openTools)
-                                }}> {openTools ? "关闭" : "打开"}工具栏</div>
-                                {isLogin && <div className="nav-right-button" onClick={() => {
-                                    handleLogout()
-                                }}> 退出登陆</div>}
-                            </div>
-                        )
+                                    } else {
+                                        window.location = "/login"
+                                    }
+                                }}
+                            >{isLogin ? '修改信息' : '登陆'}</div>
+                            <div className="nav-right-button" onClick={() => {
+                                setOpenTools(!openTools)
+                            }}> {openTools ? "关闭" : "打开"}工具栏</div>
+                            {isLogin && <div className="nav-right-button" onClick={() => {
+                                handleLogout()
+                            }}> 退出登陆</div>}
+
+                        </div>
+                    )
                     }
                 </>
             }

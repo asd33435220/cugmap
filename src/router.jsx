@@ -14,24 +14,36 @@ function router() {
     const [isGamMode, setIsGamMode] = useState(false)
     const [myMarkerPosition, setMyMarkerPosition] = useState([0, 0])
     const [nearbyUserList, setNearbyUserList] = useState([])
-    const [userPosition, setUserPosition] = useState([0,0])
+    const [userPosition, setUserPosition] = useState([0, 0])
     const [studentId, setStudentId] = useState("")
     const [studentName, setStudentName] = useState("")
     const [signature, setSignature] = useState("")
     const [myMapObj, setMyMapObj] = useState(null)
     const [receiverInfo, setReceiverInfo] = useState({})
-
+    const [isPhone, setIsPhone] = useState(false)
+    const [isFunMode, setIsFunMode] = useState(false)
+    const [isAddPlaceMode, setIsAddPlaceMode] = useState(false)
+    const [placePosition, setPlacePosition] = useState([])
+    const [previewPlaceMessage, setPreviewPlaceMessage] = useState({})
 
     return (
         <Router>
             <div style={{ width: "100%", height: 80 }} />
             <NavBar
+                previewPlaceMessage={previewPlaceMessage}
+                setPreviewPlaceMessage={setPreviewPlaceMessage}
+                isPhone={isPhone}
+                setIsPhone={setIsPhone}
                 openTools={openTools}
                 setOpenTools={setOpenTools}
                 isPositionMode={isPositionMode}
                 isGamMode={isGamMode}
+                isFunMode={isFunMode}
+                isAddPlaceMode={isAddPlaceMode}
+                setIsAddPlaceMode={setIsAddPlaceMode}
                 setIsPositionMode={setIsPositionMode}
                 setIsGamMode={setIsGamMode}
+                setIsFunMode={setIsFunMode}
                 myMarkerPosition={myMarkerPosition}
                 setUserPosition={setUserPosition}
                 studentId={studentId}
@@ -46,6 +58,7 @@ function router() {
                 myMapObj={myMapObj}
                 receiverInfo={receiverInfo}
                 setReceiverInfo={setReceiverInfo}
+                placePosition={placePosition}
             />
             {/* <NavLink to="/login">登陆</NavLink> */}
             <Switch>
@@ -54,12 +67,21 @@ function router() {
                 {/* <Route path='/app' component={SideBar} /> */}
                 <Route path='/' render={() =>
                     <Map
+                        previewPlaceMessage={previewPlaceMessage}
+                        setPreviewPlaceMessage={setPreviewPlaceMessage}
+                        placePosition={placePosition}
+                        setPlacePosition={setPlacePosition}
+                        isPhone={isPhone}
                         openTools={openTools}
                         setOpenTools={setOpenTools}
                         isPositionMode={isPositionMode}
                         isGamMode={isGamMode}
                         setIsGamMode={setIsGamMode}
                         setIsPositionMode={setIsPositionMode}
+                        setIsFunMode={setIsFunMode}
+                        isAddPlaceMode={isAddPlaceMode}
+                        setIsAddPlaceMode={setIsAddPlaceMode}
+                        isFunMode={isFunMode}
                         myMarkerPosition={myMarkerPosition}
                         setMyMarkerPosition={setMyMarkerPosition}
                         nearbyUserList={nearbyUserList}
