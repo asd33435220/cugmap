@@ -349,3 +349,37 @@ span {
     margin: 3px 0;
   }
 }
+
+.window-button-list {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  .drive-place {
+    margin-top: 10px;
+    font-size: 18px;
+    color:black;
+    cursor: pointer;
+  }
+  
+  .drive-place:hover {
+    color: #0574d0;
+    font-weight: 700;
+  }
+  
+  .comment-place {
+    margin-top: 10px;
+    font-size: 18px;
+    color:black;
+    cursor: pointer;
+  }
+  
+  .comment-place:hover {
+    color: #0574d0;
+    font-weight: 700;
+  }
+}
+
+

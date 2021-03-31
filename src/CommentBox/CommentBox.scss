@@ -1,0 +1,281 @@
+@keyframes close {
+
+  0% {
+    right: 0;
+  }
+
+  100% {
+    right: -265px;
+  }
+}
+
+@keyframes open {
+
+  0% {
+    right: -265px;
+  }
+
+  100% {
+    right: 0;
+  }
+}
+
+@keyframes select {
+
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.comment-close {
+  right: 0;
+  width: 30px;
+  height: 30px;
+  position: fixed;
+  top: 200px;
+  background-image: url(../NavBar/images/left.svg);
+  background-size: contain;
+}
+
+.comment-close-animation {
+  animation: close .4s ease-in-out ;
+  right: -265px;
+}
+
+.comment-open-animation {
+  animation: open .4s ease-in-out ;
+  right: 0;
+}
+
+.comment-message-box {
+  height: 400px;
+  width: 260px;
+  background-color: white;
+  color: #fff;
+  z-index: 1001;
+  position: fixed;
+  top: 200px;
+  overscroll-behavior-y: none;
+  overflow: hidden;
+  border: 1px black solid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  .comment-right-button {
+    z-index: 999;
+    background-image: url(../NavBar/images/right.svg);
+    background-size: 100% 100%;
+    cursor: pointer;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 5px;
+    left: 5px;
+  }
+
+
+
+  .comment-title {
+
+    text-align: center;
+    font-size: 24px;
+    line-height: 40px;
+    color: black;
+    height: 40px;
+  }
+
+  .comment-other {
+    width: 100%;
+    height: 246px;
+    overflow: auto;
+    overscroll-behavior: none;
+
+    .comment-item {
+      width: 100%;
+      color: black;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: flex-start;
+      margin-top: 10px;
+
+      .comment-item-avatar {
+        width: 40px;
+        height: 40px;
+        margin: 10px 5px 0 ;
+        background-image: url(../NavBar/images/user.svg);
+        background-size: contain;
+        border-radius: 30px;
+        flex-shrink: 0;
+      }
+
+      .comment-item-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+
+        .comment-commentator {
+          font-weight: 700;
+
+          .comment-chat {
+            margin-left: 15px;
+            color: red;
+            font-weight: 400;
+            font-size: 14px;
+            cursor: pointer;
+          }
+        }
+
+        .comment-message {
+          font-weight: 500;
+          font-size: 16px;
+          color: black;
+        }
+
+        .comment-score {
+          margin-top: 6px;
+          width: 94px;
+          height: 20px;
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          justify-content: space-between;
+
+          .comment-star {
+            border-radius: 6px;
+            width: 16px;
+            height: 16px;
+            background-image: url("data:image/png;base64,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");
+            background-size: contain;
+          }
+
+          .comment-dark {
+            border-radius: 6px;
+            width: 16px;
+            height: 16px;
+            background-image: url("data:image/png;base64,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");
+            background-size: contain;
+          }
+        }
+
+        .comment-time {
+          font-weight: 400;
+          color: black;
+          font-size: 12px;
+          opacity: .67;
+        }
+      }
+
+    }
+
+    .comment-item-line {
+      width: 100%;
+      height: 1px;
+      background-color: #ccc;
+      opacity: .75;
+    }
+  }
+
+  .comment-empty {
+    font-weight: 700;
+    margin: 0 auto;
+    width: 20px;
+    font-size: 20px;
+    height: 100%;
+    color: black;
+    word-wrap: break-word;
+  }
+
+
+  .comment-my {
+    margin-top: auto;
+    height: 150px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    .comment-comment {
+      resize: none;
+      width: 90%;
+      height: 52px;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .comment-my-bottom {
+      height: 30px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+
+      .comment-star-box {
+        width: 60%;
+        height: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+    
+        .comment-star-score {
+          background-image: url(../images/star-score.svg);
+          width: 30px;
+          height: 30px;
+          background-size: contain;
+          cursor: pointer;
+        }
+    
+        .comment-star {
+          background-image: url(../images/star.svg);
+          width: 30px;
+          height: 30px;
+          background-size: contain;
+          cursor: pointer;
+        }
+      }
+
+      .comment-submit {
+        cursor: pointer;
+        color: black;
+        font-weight: 400;
+        font-size: 20px;
+        margin-right: 10px;
+      }
+      
+      .comment-submit:hover {
+        color: #0574d0;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .comment-input {
+    width: 80%;
+    height: 20px;
+    margin-bottom: 5px;
+  }
+
+  .comment-subtitle {
+    font-size: 20px;
+    color: black;
+  }
+
+  .comment-line {
+    width: 100%;
+    height: 2px;
+    background-color: #ccc;
+  }
+
+}
+
+

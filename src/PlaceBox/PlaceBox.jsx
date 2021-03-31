@@ -7,18 +7,18 @@ function PlaceBox(props) {
         isPhone,
         showToast,
         setPreviewPlaceMessage,
+        studentId,
     } = props
 
     const [isClose, setIsClose] = useState(false)
     const [placeName, setPlaceName] = useState('')
     const [address, setAddress] = useState('')
-    const [command, setCommand] = useState('')
+    const [comment, setcomment] = useState('')
     const [selected, setSelected] = useState(1)
     const [score, setScore] = useState(3)
     const [page, setPage] = useState(1)
     const [image1Url, setImage1Url] = useState('')
     const [image2Url, setImage2Url] = useState('')
-    const [image3Url, setImage3Url] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
 
     useEffect(() => {
@@ -26,9 +26,13 @@ function PlaceBox(props) {
     }, [placePosition])
 
     const previewPlace = () => {
-        console.log('placePosition', placePosition);
         if (placeName.trim() === '') {
             showToast('请先填写地物名称')
+            setPage(1)
+            return
+        }
+        if (placeName.length > 25) {
+            showToast('地物名称过长')
             setPage(1)
             return
         }
@@ -37,25 +41,45 @@ function PlaceBox(props) {
             setPage(1)
             return
         }
+        if (address.length > 100) {
+            showToast('地址过长')
+            setPage(1)
+            return
+        }
         if (placePosition.length === 0 || placePosition[0] === 0 && placePosition[1] === 0) {
             showToast('请先在地图上选择地物坐标')
             setPage(1)
             return
         }
-        if (command.trim() === '') {
+        if (comment.trim() === '') {
             showToast('请先推荐语')
+            return
+        }
+        if (comment.length > 100) {
+            showToast('推荐语过长')
             return
         }
         if (phoneNumber.trim() === '') {
             showToast('请先填写联系电话')
             return
         }
-
+        if (phoneNumber.length > 15) {
+            showToast('电话过长')
+            return
+        }
+        if (image1Url.length > 3000) {
+            showToast('图片1地址过长')
+            return
+        }
+        if (image1Url.length > 3000) {
+            showToast('图片2地址过长')
+            return
+        }
 
         setPreviewPlaceMessage({
             placeName,
             address,
-            command,
+            comment,
             placePosition,
             type: selected,
             score,
@@ -65,8 +89,72 @@ function PlaceBox(props) {
         })
 
     }
-    const commitPlace = () => {
-
+    const commitPlace = async () => {
+        if (placeName.trim() === '') {
+            showToast('请先填写地物名称')
+            setPage(1)
+            return
+        }
+        if (placeName.length > 20) {
+            showToast('地物名称过长')
+            setPage(1)
+            return
+        }
+        if (address.trim() === '') {
+            showToast('请先填写地物详细地址')
+            setPage(1)
+            return
+        }
+        if (address.length > 50) {
+            showToast('地址过长')
+            setPage(1)
+            return
+        }
+        if (placePosition.length === 0 || placePosition[0] === 0 && placePosition[1] === 0) {
+            showToast('请先在地图上选择地物坐标')
+            setPage(1)
+            return
+        }
+        if (comment.trim() === '') {
+            showToast('请先推荐语')
+            return
+        }
+        if (comment.length > 50) {
+            showToast('推荐语过长')
+            return
+        }
+        if (phoneNumber.trim() === '') {
+            showToast('请先填写联系电话')
+            return
+        }
+        if (phoneNumber.length > 15) {
+            showToast('电话过长')
+            return
+        }
+        if (image1Url.length > 3000) {
+            showToast('图片1地址过长')
+            return
+        }
+        if (image1Url.length > 3000) {
+            showToast('图片2地址过长')
+            return
+        }
+        const form = {
+            Name: placeName,
+            Address: address,
+            Lng:placePosition[0],
+            Lat:placePosition[1],
+            Image1Url:image1Url,
+            Image2Url:image2Url,
+            Type:selected,
+            Score:score,
+            Number:phoneNumber,
+            Comment:comment
+        }
+        const data = React.$qs.stringify(form)
+        const res = await React.$http.post("/place/add", data)
+        console.log("res",res);
+        showToast(res.data.message,2000,"/fun")
     }
     return (
         <>
@@ -145,8 +233,8 @@ function PlaceBox(props) {
                     :
                     <>
                         <div className="place-subtitle">请写下推荐语</div>
-                        <textarea cols="20" className="place-command" rows="5" value={command} onChange={e => {
-                            setCommand(e.target.value)
+                        <textarea cols="20" className="place-comment" rows="5" value={comment} onChange={e => {
+                            setcomment(e.target.value)
                         }}></textarea>
 
                         <div className="place-line"></div>
@@ -157,14 +245,14 @@ function PlaceBox(props) {
                             }} />
                         <div className="place-line"></div>
                         <div className="place-subtitle">图片1在线地址或base64编码 (可选)</div>
-                        <input type="text" className="place-input" placeholder="长度不能超过100喔"
+                        <input type="text" className="place-input" placeholder="长度不能超过3000喔"
                             value={image1Url} onChange={e => {
                                 setImage1Url(e.target.value)
                             }} />
 
                         <div className="place-line"></div>
                         <div className="place-subtitle">图片2在线地址或base64编码 (可选)</div>
-                        <input type="text" className="place-input" placeholder="长度不能超过100喔"
+                        <input type="text" className="place-input" placeholder="长度不能超过3000喔"
                             value={image2Url} onChange={e => {
                                 setImage2Url(e.target.value)
                             }} />

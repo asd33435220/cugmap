@@ -2,6 +2,7 @@ import React, { Component, useState, useEffect } from 'react';
 import LOGO from './images/logo.jpeg';
 import MessageBox from '../MessageBox/MessageBox'
 import PlaceBox from '../PlaceBox/PlaceBox'
+import CommentBox from '../CommentBox/CommentBox'
 import './NavBar.scss';
 
 function NavBar(props) {
@@ -13,7 +14,6 @@ function NavBar(props) {
         setIsFunMode,
         setOpenTools,
         myMarkerPosition,
-        isGamMode,
         setIsGamMode,
         setNearbyUserList,
         nearbyUserList,
@@ -35,6 +35,12 @@ function NavBar(props) {
         placePosition,
         previewPlaceMessage,
         setPreviewPlaceMessage,
+        setPlaceInfoList,
+        CommentMode,
+        placeInfoList,
+        setChatPlaceInfo,
+        setIsMessageBoxShow,
+        isMessageBoxShow,
     }
         = props
     const isMap = window.location.pathname === "/"
@@ -42,9 +48,30 @@ function NavBar(props) {
     const [isMore, setIsMore] = useState(false)
     const [isPanelShow, setIsPanelShow] = useState(false)
     const [panelMessage, setPanelMessage] = useState("")
-    const [isMessageBoxShow, setIsMessageBoxShow] = useState(false)
+    const [placeType, setPlaceType] = useState(0)
+    const [allPlaceInfo, setAllPlaceInfo] = useState([])
 
-    const showToast = (message, time=2000, url) => {
+    function getPlaceType(placeType) {
+        if (placeType >= 1 && placeType <= 3) {
+            console.log('getPlaceType', placeType);
+            const newPlaceList = []
+            allPlaceInfo.map(item => {
+                console.log('item', item);
+                if (item.Type === placeType) {
+                    newPlaceList.push(item)
+                }
+            })
+            console.log('newPlaceList', newPlaceList);
+            setPlaceInfoList(newPlaceList)
+        }
+    }
+
+    useEffect(() => {
+        console.log('getPlaceType', placeType);
+        getPlaceType(placeType)
+    }, [placeType])
+
+    const showToast = (message, time = 2000, url) => {
         setPanelMessage(message)
         setIsPanelShow(true)
         setTimeout(() => {
@@ -92,13 +119,36 @@ function NavBar(props) {
         if (res.data.code === -2) {
             showToast(res.data.message, 2000, "/position")
         }
-        showToast("已经为你匹配附近的校友,快给他们留言吧!", 2000)
+        showToast("已经为你匹配附近的校友,快给他们留言吧!", 3000)
         setIsGamMode(true)
         setIsMessageBoxShow(true)
         setUserPosition([res.data.user_lng, res.data.user_lat])
         setNearbyUserList(res.data.user_list);
-
     }
+
+    async function getPlace() {
+        const res = await React.$http.get("/place/info")
+        console.log("place-res", res);
+        if (res.data.code === -2) {
+            showToast(res.data.message, 3000, "/fun")
+        } else {
+            showToast('点击店铺可以评论并查看详细信息喔', 3000)
+            setPlaceInfoList(res.data.place_info)
+            setAllPlaceInfo(res.data.place_info)
+        }
+    }
+
+    async function getChatPlace(placeCode) {
+        console.log('placeCode',placeCode);
+        const res = await React.$http.get("/place/chat",{
+            params:{
+                placeCode
+            }
+        })
+        setChatPlaceInfo(res.data.place_info)
+        console.log('ChatPlaceRes',res);
+    }
+
     useEffect(() => {
         const pathname = window.location.pathname
         if (pathname === "/position") {
@@ -113,6 +163,7 @@ function NavBar(props) {
         } else if (pathname === "/fun") {
             setIsFunMode(true)
             setOpenTools(true)
+            getPlace()
         } else if (pathname === "/addplace") {
             setIsAddPlaceMode(true)
             setOpenTools(true)
@@ -126,8 +177,11 @@ function NavBar(props) {
         localStorage.removeItem("token")
         getToken()
     }
-    const handleAddPlace = async () => {
-
+    const changeGamMode = (info) => {
+        console.log('info', info);
+        console.log('setReceiverInfo');
+        setReceiverInfo(info)
+        setIsMessageBoxShow(true)
     }
     const handleChangePosition = async () => {
         console.log(myMarkerPosition);
@@ -187,13 +241,25 @@ function NavBar(props) {
     }
     return (
         <div className="nav-container" >
+            {CommentMode > 0 && <CommentBox
+                changeGamMode={changeGamMode}
+                studentName={studentName}
+                CommentMode={CommentMode}
+                setReceiverInfo={setReceiverInfo}
+                showToast={showToast}
+                studentId={studentId}
+            />}
             {isMessageBoxShow && <MessageBox
+                getChatPlace={getChatPlace}
                 receiverInfo={receiverInfo}
+                CommentMode={CommentMode}
                 setReceiverInfo={setReceiverInfo}
                 studentId={studentId}
                 getFriendInfo={getFriendInfo}
+                setIsMessageBoxShow={setIsMessageBoxShow}
             />}
             {isAddPlaceMode && <PlaceBox
+                studentId={studentId}
                 previewPlaceMessage={previewPlaceMessage}
                 setPreviewPlaceMessage={setPreviewPlaceMessage}
                 showToast={showToast}
@@ -227,19 +293,14 @@ function NavBar(props) {
                                 </div>
                                 {isMore && (
                                     <div className="nav-right-phone-more-pannel">
-                                        {isFunMode && <div className="nav-right-phone-more-pannel-line">美食</div>}
-                                        {isFunMode && <div className="nav-right-phone-more-pannel-line">娱乐</div>}
-                                        {isFunMode && <div className="nav-right-phone-more-pannel-line">基础设施</div>}
+                                        {isFunMode && <div className="nav-right-phone-more-pannel-line" onClick={() => { setPlaceType(1) }}>美食</div>}
+                                        {isFunMode && <div className="nav-right-phone-more-pannel-line" onClick={() => { setPlaceType(2) }}>娱乐</div>}
+                                        {isFunMode && <div className="nav-right-phone-more-pannel-line" onClick={() => { setPlaceType(3) }}>基础设施</div>}
                                         {isFunMode && <div className="nav-right-phone-more-pannel-line" onClick={() => {
                                             setIsAddPlaceMode(true)
                                             window.location = "/addplace"
                                         }}>新增地点</div>}
-                                        {isAddPlaceMode && <div className="nav-right-phone-more-pannel-line"
-                                            onClick={() => {
-                                                handleAddPlace()
-                                                setIsMore(false)
-                                            }}>保存地点信息
-                                        </div>}
+
                                         {isPositionMode && <div className="nav-right-phone-more-pannel-line"
                                             onClick={() => {
                                                 handleChangePosition()
@@ -265,20 +326,15 @@ function NavBar(props) {
 
                         ) : (
                             <div className="nav-right-goback">
-                                {isFunMode && <div className="nav-right-button">美食</div>}
-                                {isFunMode && <div className="nav-right-button">娱乐</div>}
-                                {isFunMode && <div className="nav-right-button">基础设施</div>}
+                                {isFunMode && <div className="nav-right-button" onClick={() => { setPlaceType(1) }}>美食</div>}
+                                {isFunMode && <div className="nav-right-button" onClick={() => { setPlaceType(2) }}>娱乐</div>}
+                                {isFunMode && <div className="nav-right-button" onClick={() => { setPlaceType(3) }}>基础设施</div>}
 
                                 {isFunMode && <div className="nav-right-button" onClick={() => {
                                     setIsAddPlaceMode(true)
                                     window.location = "/addplace"
                                 }}>新增地点</div>}
-                                {isAddPlaceMode && <div className="nav-right-button"
-                                    onClick={() => {
-                                        handleAddPlace()
-                                        setIsMore(false)
-                                    }}>保存地点信息
-                                        </div>}
+
                                 {isPositionMode && <div className="nav-right-button" onClick={() => {
                                     handleChangePosition()
                                 }}>保存我的信息

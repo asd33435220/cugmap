@@ -25,11 +25,20 @@ function router() {
     const [isAddPlaceMode, setIsAddPlaceMode] = useState(false)
     const [placePosition, setPlacePosition] = useState([])
     const [previewPlaceMessage, setPreviewPlaceMessage] = useState({})
+    const [placeInfoList, setPlaceInfoList] = useState([])
+    const [CommentMode, setCommentMode] = useState(0)
+    const [chatPlaceInfo, setChatPlaceInfo] = useState({})
+    const [isMessageBoxShow, setIsMessageBoxShow] = useState(false)
 
     return (
         <Router>
             <div style={{ width: "100%", height: 80 }} />
             <NavBar
+                setIsMessageBoxShow={setIsMessageBoxShow}
+                isMessageBoxShow={isMessageBoxShow}
+                setChatPlaceInfo={setChatPlaceInfo}
+                setPlaceInfoList={setPlaceInfoList}
+                placeInfoList={placeInfoList}
                 previewPlaceMessage={previewPlaceMessage}
                 setPreviewPlaceMessage={setPreviewPlaceMessage}
                 isPhone={isPhone}
@@ -59,6 +68,7 @@ function router() {
                 receiverInfo={receiverInfo}
                 setReceiverInfo={setReceiverInfo}
                 placePosition={placePosition}
+                CommentMode={CommentMode}
             />
             {/* <NavLink to="/login">登陆</NavLink> */}
             <Switch>
@@ -67,6 +77,10 @@ function router() {
                 {/* <Route path='/app' component={SideBar} /> */}
                 <Route path='/' render={() =>
                     <Map
+                    setIsMessageBoxShow={setIsMessageBoxShow}
+                        chatPlaceInfo={chatPlaceInfo}
+                        setCommentMode={setCommentMode}
+                        placeInfoList={placeInfoList}
                         previewPlaceMessage={previewPlaceMessage}
                         setPreviewPlaceMessage={setPreviewPlaceMessage}
                         placePosition={placePosition}

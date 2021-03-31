@@ -4,9 +4,11 @@ import './MessageBox.scss'
 function MessageBox(props) {
     const {
         receiverInfo,
-        setReceiverInfo,
         studentId,
         getFriendInfo,
+        CommentMode,
+        setIsMessageBoxShow,
+        getChatPlace,
     } = props
     const [userList, setUserList] = useState([])
     const [isClose, setIsClose] = useState(false)
@@ -87,6 +89,7 @@ function MessageBox(props) {
     }, [])
 
     useEffect(() => {
+        console.log('receiverInfo', receiverInfo);
         const { id, name } = receiverInfo
         if (!userList[id]) {
             userList[id] = {
@@ -200,7 +203,7 @@ function MessageBox(props) {
         const newInfo = { ...partnerInfo }
         const date = new Date()
         const sendTime = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
-        newInfo.messageList.push({ Message: message, isSendFromMe: true, SendTimeStr: sendTime, SendTime: date.getTime(),placeCode })
+        newInfo.messageList.push({ Message: message, isSendFromMe: true, SendTimeStr: sendTime, SendTime: date.getTime(), placeCode })
         setPartnerInfo(newInfo)
         setInputMessage('')
         const form = {
@@ -217,7 +220,11 @@ function MessageBox(props) {
     return (
         <>
             {isClose && <div className="chat-close" onClick={() => {
-                setIsClose(false)
+                if (CommentMode > 0) {
+                    setIsMessageBoxShow(false)
+                } else {
+                    setIsClose(false)
+                }
             }}></div>}
 
             <div className={!isClose ? "chat-message-box chat-open-animation" : "chat-message-box chat-close-animation"}>
@@ -275,7 +282,10 @@ function MessageBox(props) {
                                             {item.placeCode === 0 ?
                                                 <div className="send-message">{item.Message}</div>
                                                 :
-                                                <div className="send-message-with-placecode">{item.Message}</div>}
+                                                <div className="send-message-with-placecode"
+                                                    onClick={() => {
+                                                        getChatPlace(item.placeCode)
+                                                    }}>{item.Message}</div>}
                                         </div>
                                             :
                                             <div className="receive-box">
@@ -284,7 +294,9 @@ function MessageBox(props) {
                                                 {item.placeCode === 0 ?
                                                     <div className="receive-message">{item.Message}</div>
                                                     :
-                                                    <div className="receive-message-with-placecode">{item.Message}</div>}
+                                                    <div className="receive-message-with-placecode" onClick={() => {
+                                                        getChatPlace(item.placeCode)
+                                                    }}>{item.Message}</div>}
                                             </div>}
 
                                     </div>

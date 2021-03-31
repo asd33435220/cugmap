@@ -28,6 +28,11 @@ function Map(props) {
     setPlacePosition,
     previewPlaceMessage,
     setPreviewPlaceMessage,
+    placeInfoList,
+    setCommentMode,
+    chatPlaceInfo,
+    setIsMessageBoxShow,
+    isGamMode,
     // setIsAddPlaceMode,
     nearbyUserList } = props
 
@@ -48,7 +53,6 @@ function Map(props) {
   const [isLoading, setIsLoading] = useState(false)
   const [myMarker, setMyMarker] = useState(null)
   const [placeMarker, setPlaceMarker] = useState(null)
-  const [isMessageBoxShow, setIsMessageBoxShow] = useState(false)
   const [isDrivePanelShow, setIsDrivePanelShow] = useState(false)
   const [driveRoute, setDriveRoute] = useState([])//导航去找朋友
   const [friendName, setFriendName] = useState("")
@@ -73,6 +77,108 @@ function Map(props) {
   useEffect(() => {
     initMap()
   }, [])
+  //关闭信息窗体
+  function closePlaceInfoWindow() {
+    SeeComment(0)
+    isGamMode && setIsMessageBoxShow(true)
+    map.clearInfoWindow();
+  }
+  function createPlaceInfoWindow(title, content, position, PlaceCode, CommentNumber) {
+    var info = document.createElement("div");
+    info.className = "custom-info input-card content-window-card";
+
+    //可以通过下面的方式修改自定义窗体的宽高
+    // info.style.width = "400px";
+    // 定义顶部标题
+    var top = document.createElement("div");
+    var titleD = document.createElement("div");
+    var closeX = document.createElement("img");
+    top.className = "info-top";
+    titleD.innerHTML = title;
+    closeX.src = "https://webapi.amap.com/images/close2.gif";
+    closeX.onclick = closePlaceInfoWindow;
+
+    top.appendChild(titleD);
+    top.appendChild(closeX);
+    info.appendChild(top);
+
+    // 定义中部内容
+    var middle = document.createElement("div");
+    middle.className = "info-middle";
+    middle.style.backgroundColor = 'white';
+    middle.innerHTML = content;
+    var buttonList = document.createElement('div')
+    buttonList.className = "window-button-list"
+    var drive = document.createElement("span");
+    drive.className = "drive-place";
+    drive.innerText = "导航前往"
+    drive.onclick = () => {
+      driveToFriend(position)
+    }
+    buttonList.appendChild(drive)
+
+    var comment = document.createElement("span");
+    comment.className = "comment-place";
+    comment.innerText = `查看/添加评论(${CommentNumber})`
+    comment.onclick = () => {
+      SeeComment(PlaceCode)
+      setIsMessageBoxShow(false)
+    }
+    buttonList.appendChild(drive)
+    buttonList.appendChild(comment)
+    middle.appendChild(buttonList)
+    info.appendChild(middle);
+
+    // 定义底部内容
+    var bottom = document.createElement("div");
+    bottom.className = "info-bottom";
+    bottom.style.position = 'relative';
+    bottom.style.top = '0px';
+    bottom.style.margin = '0 auto';
+    var sharp = document.createElement("img");
+    sharp.src = "https://webapi.amap.com/images/sharp.png";
+    bottom.appendChild(sharp);
+    info.appendChild(bottom);
+    return info;
+  }
+  function createInfoWindow(title, content, closeInfoWindow) {
+    var info = document.createElement("div");
+    info.className = "custom-info input-card content-window-card";
+
+    //可以通过下面的方式修改自定义窗体的宽高
+    // info.style.width = "400px";
+    // 定义顶部标题
+    var top = document.createElement("div");
+    var titleD = document.createElement("div");
+    var closeX = document.createElement("img");
+    top.className = "info-top";
+    titleD.innerHTML = title;
+    closeX.src = "https://webapi.amap.com/images/close2.gif";
+    closeX.onclick = closeInfoWindow;
+
+    top.appendChild(titleD);
+    top.appendChild(closeX);
+    info.appendChild(top);
+
+    // 定义中部内容
+    var middle = document.createElement("div");
+    middle.className = "info-middle";
+    middle.style.backgroundColor = 'white';
+    middle.innerHTML = content;
+    info.appendChild(middle);
+
+    // 定义底部内容
+    var bottom = document.createElement("div");
+    bottom.className = "info-bottom";
+    bottom.style.position = 'relative';
+    bottom.style.top = '0px';
+    bottom.style.margin = '0 auto';
+    var sharp = document.createElement("img");
+    sharp.src = "https://webapi.amap.com/images/sharp.png";
+    bottom.appendChild(sharp);
+    info.appendChild(bottom);
+    return info;
+  }
   function initMap() {
     const AMap = window.AMap
 
@@ -91,7 +197,6 @@ function Map(props) {
       var target = ev.target;
       // 触发事件的地理坐标，AMap.LngLat 类型
       var lnglat = ev.lnglat;
-      console.log("lnglat=", lnglat);
       // 触发事件的像素坐标，AMap.Pixel 类型
       var pixel = ev.pixel;
       // 触发事件类型
@@ -125,7 +230,6 @@ function Map(props) {
       map: map,
       title: '西校区',
       icon: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik00IDMzQzQgMzEuODk1NCA0Ljg5NTQzIDMxIDYgMzFIMTJWMjRMMjQgMTZMMzYgMjRWMzFINDJDNDMuMTA0NiAzMSA0NCAzMS44OTU0IDQ0IDMzVjQyQzQ0IDQzLjEwNDYgNDMuMTA0NiA0NCA0MiA0NEg0VjMzWiIgZmlsbD0iIzMzMyIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjQgNlYxNiIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zNiAxMlY2QzM2IDYgMzQuNSA5IDMwIDZDMjUuNSAzIDI0IDYgMjQgNlYxMkMyNCAxMiAyNS41IDkgMzAgMTJDMzQuNSAxNSAzNiAxMiAzNiAxMloiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjggNDRWMzFIMjBMMjAgNDQiIHN0cm9rZT0iI0ZGRiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTggNDRMMzAgNDQiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4="
-
     });
     westMarker.setLabel({
       offset: new AMap.Pixel(-13, -24),
@@ -157,7 +261,6 @@ function Map(props) {
     // map.setFitView();
   }
   function initEvent() {
-    console.log("initEvent");
 
     const AMap = window.AMap
     let infoNew = getInfoWindow("未来城校区", newJPG, "湖北省武汉市东湖新技术开发区锦程街68号")
@@ -170,7 +273,6 @@ function Map(props) {
     const areaBtn = document.querySelector('.area')
     const toolBtn = document.querySelector('.tool')
     AMap.event.addListener(newMarker, 'click', function () {
-      console.log("here");
       infoNew.open(map, newMarker.getPosition());
       map.setCenter(newPosition);
       map.setZoom(18)
@@ -203,28 +305,24 @@ function Map(props) {
       map.setPitch(60)
       // // 获取地图中心点
       let currentCenter = map.getCenter();
-      console.log("currentCenter=", currentCenter);
     })
     westBtn.addEventListener('click', () => {
       map.setCenter(westPosition);
       map.setZoom(18)
       map.setPitch(60)
       let currentCenter = map.getCenter();
-      console.log("currentCenter=", currentCenter);
     })
     eastBtn.addEventListener('click', () => {
       map.setCenter(eastPosition);
       map.setZoom(18)
       map.setPitch(60)
       let currentCenter = map.getCenter();
-      console.log("currentCenter=", currentCenter);
     })
     northBtn.addEventListener('click', () => {
       map.setCenter(northPosition);
       map.setZoom(18)
       map.setPitch(60)
       let currentCenter = map.getCenter();
-      console.log("currentCenter=", currentCenter);
     })
     distanceBtn.addEventListener('click', () => {
       mouseTool.close(true)
@@ -246,55 +344,10 @@ function Map(props) {
       content.push("<a href='http://www.cug.edu.cn/'>官方网站</a>");
       var infoWindow = new AMap.InfoWindow({
         isCustom: true,  //使用自定义窗体
-        content: createInfoWindow(title, content.join("<br/>")),
+        content: createInfoWindow(title, content.join("<br/>"), () => { map.clearInfoWindow() }),
         offset: new AMap.Pixel(16, -45)
       });
       return infoWindow
-    }
-
-    //构建自定义信息窗体
-    function createInfoWindow(title, content) {
-      var info = document.createElement("div");
-      info.className = "custom-info input-card content-window-card";
-
-      //可以通过下面的方式修改自定义窗体的宽高
-      // info.style.width = "400px";
-      // 定义顶部标题
-      var top = document.createElement("div");
-      var titleD = document.createElement("div");
-      var closeX = document.createElement("img");
-      top.className = "info-top";
-      titleD.innerHTML = title;
-      closeX.src = "https://webapi.amap.com/images/close2.gif";
-      closeX.onclick = closeInfoWindow;
-
-      top.appendChild(titleD);
-      top.appendChild(closeX);
-      info.appendChild(top);
-
-      // 定义中部内容
-      var middle = document.createElement("div");
-      middle.className = "info-middle";
-      middle.style.backgroundColor = 'white';
-      middle.innerHTML = content;
-      info.appendChild(middle);
-
-      // 定义底部内容
-      var bottom = document.createElement("div");
-      bottom.className = "info-bottom";
-      bottom.style.position = 'relative';
-      bottom.style.top = '0px';
-      bottom.style.margin = '0 auto';
-      var sharp = document.createElement("img");
-      sharp.src = "https://webapi.amap.com/images/sharp.png";
-      bottom.appendChild(sharp);
-      info.appendChild(bottom);
-      return info;
-    }
-
-    //关闭信息窗体
-    function closeInfoWindow() {
-      map.clearInfoWindow();
     }
   }
   function initPlugin() {
@@ -355,7 +408,6 @@ function Map(props) {
       AMap.event.addListener(geolocation, 'error', onError)
 
       function onComplete(data) {
-        console.log(data.position);
         const lat = data.position.lat
         const lng = data.position.lng
         const pathname = window.location.pathname
@@ -452,7 +504,6 @@ function Map(props) {
       switch (e.target.innerText) {
         case "时间最短⏰":
           policy = AMap.DrivingPolicy.LEAST_TIME
-          console.log("here");
           break;
         case "路程最短🛣️":
           policy = AMap.DrivingPolicy.LEAST_DISTANCE
@@ -523,7 +574,6 @@ function Map(props) {
         center: [114.61617672935125, 30.45759461941093],
         resizeEnable: true,
       });
-      console.log("transfer");
 
       //构造路线导航类
       var transfer = new AMap.Driving({
@@ -548,7 +598,6 @@ function Map(props) {
     }
   }
   function driveToFriend(position) {
-    setIsMessageBoxShow(false)
     const AMap = window.AMap
     map = new AMap.Map("container", {
       zoom: 15, //缩放级别
@@ -565,7 +614,6 @@ function Map(props) {
     let endPosition = [...position]
     setIsLoading(true)
     driving.search(startPosition, endPosition, function (status, result) {
-      console.log("end");
 
       // result 即是对应的驾车导航信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_DrivingResult
       if (status === 'complete') {
@@ -581,6 +629,9 @@ function Map(props) {
       setIsLoading(false)
 
     });
+  }
+  function SeeComment(placeCode) {
+    setCommentMode(placeCode)
   }
   function panelRouter() {
     if (panelState === 0) {
@@ -645,7 +696,6 @@ function Map(props) {
   }
   function addPlaceMarker() {
     placeMarker && myMapObj.remove(placeMarker)
-    console.log('myMapObj',myMapObj);
     const AMap = window.AMap
     const icon = new AMap.Icon({
       image: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC4wMSIvPjxwYXRoIGQ9Ik00IDEySDQ0VjIwTDQyLjYwMTUgMjAuODM5MUM0MC4zODQ3IDIyLjE2OTIgMzcuNjE1MyAyMi4xNjkyIDM1LjM5ODUgMjAuODM5MUwzNCAyMEwzMi42MDE1IDIwLjgzOTFDMzAuMzg0NyAyMi4xNjkyIDI3LjYxNTMgMjIuMTY5MiAyNS4zOTg1IDIwLjgzOTFMMjQgMjBMMjIuNjAxNSAyMC44MzkxQzIwLjM4NDcgMjIuMTY5MiAxNy42MTUzIDIyLjE2OTIgMTUuMzk4NSAyMC44MzkxTDE0IDIwTDEyLjYwMTUgMjAuODM5MUMxMC4zODQ3IDIyLjE2OTIgNy42MTUzMSAyMi4xNjkyIDUuMzk4NTMgMjAuODM5MUw0IDIwVjEyWiIgZmlsbD0iIzAwMCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik04IDIyLjQ4ODlWNDRINDBWMjIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNOCAxMS44MjIyVjRINDBWMTIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cmVjdCB4PSIxOSIgeT0iMzIiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMiIgZmlsbD0iIzAwMCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==',
@@ -791,7 +841,6 @@ function Map(props) {
 
     //关闭信息窗体
     function closeFriendInfoWindow() {
-      setIsMessageBoxShow(false)
       map.clearInfoWindow();
     }
     const MarkerList = []
@@ -811,7 +860,6 @@ function Map(props) {
         content: `<span style='color:blue;font-weight:600;text-align:center;'>${item.username}</span><span style='font-weight:400'>的位置</span>`
       });
       AMap.event.addListener(Marker, 'click', function () {
-        console.log("here");
         let infoNew = getFriendInfoWindow(item.username, item.signature, [lng, lat])
         infoNew.open(map, Marker.getPosition());
         map.setCenter([lng, lat]);
@@ -845,27 +893,267 @@ function Map(props) {
     } else {
       map.setFitView(); //自适应
     }
+    initMarker()
+    initEvent()
   }
   function leaveMessage(toUserInfo) {
-    // setIsMessageBoxShow(true)
     setReceiverInfo(toUserInfo)
   }
-  async function sendMessage() {
-    const form = {
-      receiver_id: recieverId,
-      message: message,
-      sender_id: studentId,
-    }
-    const data = React.$qs.stringify(form)
-    const res = await React.$http.post("/message/leave", data)
-    console.log(res);
-    setMessageCallback(res.data.message)
-    setIsMessageCallbackShow(true)
-    setTimeout(() => {
-      setMessageCallback("")
-      setIsMessageCallbackShow(false)
-    }, 3000)
+  function getPlaceMarker(placeInfoList) {
+    const PlaceMarkerList = []
+    const AMap = window.AMap
+    let typeText = ''
+    let imgUrl = ''
+
+    let darkStar = `<img style="width:15px;height:15px;" src="data:image/png;base64,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" />`
+    let lightStar = `<img style="width:15px;height:15px;" src="data:image/png;base64,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" />`
+    let halfStar = `<img style="width:15px;height:15px;" src="data:image/png;base64,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" />`
+
+    placeInfoList.map(item => {
+      let {
+        PlaceCode,
+        Name,
+        Address,
+        CommentNumber,
+        FounderComment,
+        Number,
+        Type,
+        Score,
+        Image1Url,
+        Image2Url,
+        Longitude,
+        Latitude,
+      } = item
+      let starsDiv = '<div style="width:60px;height:12px;display:flex;align-items: center;justify-content:flex-start">'
+
+      for (let i = 1; i < 6; i++) {
+        if (i <= Score) {
+          starsDiv += lightStar
+        } else if (Score + 0.51 >= i) {
+          starsDiv += halfStar
+        } else {
+          starsDiv += darkStar
+        }
+      }
+      Score = String(Score)
+      if(Score.length>5){
+        Score = Score.slice(0,5)
+      }
+      let iconUrl = ''
+      switch (Type) {
+        case 1:
+          typeText = '美食'
+          iconUrl = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik02IDE4SDQyVjI0QzQyIDI3LjMxMzcgMzkuMzEzNyAzMCAzNiAzMEgxMkM4LjY4NjI5IDMwIDYgMjcuMzEzNyA2IDI0VjE4WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik00MCA0Mkg4IiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTEzIDQyTDE2IDMwIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTM1IDQyTDMyIDMwIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTMwIDE4TDI3IDRIMjFMMTggMTgiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzYgMTFINDAiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNOCAxMUgxMiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg=='
+          break;
+        case 2:
+          typeText = '娱乐'
+
+          iconUrl = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik05IDI2QzkgMjYgOC45MjQyOSAyNi43ODY3IDggMzFDNy4wMjA1MyAzNS40NjQ4IDQgNDQgNCA0NEg0NEM0NCA0NCA0MC45Nzk1IDM1LjQ2NDggNDAgMzFDMzkuMDc1NyAyNi43ODY3IDM5IDI2IDM5IDI2IiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIwIDI4QzIxIDM3IDE2IDQ0IDE2IDQ0IiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTI4IDI4QzI3IDM3IDMyIDQ0IDMyIDQ0IiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTYgMThDNiAxOCAxMy41OTIzIDE3Ljk0NTIgMTcgMTdDMTkuODY1OSAxNi4yMDUxIDI0IDE0IDI0IDE0QzI0IDE0IDI3LjgyMjkgMTYuMTk0NCAzMC41IDE3QzM0LjA3MjIgMTguMDc1IDQyIDE4IDQyIDE4TDQxIDI1QzQxIDI1IDM3IDI3IDM2IDI3QzM1IDI3IDMzIDI1IDMyIDI1QzMxIDI1IDI4LjUgMjggMjggMjhDMjcuNSAyOCAyNSAyNSAyNCAyNUMyMyAyNSAyMSAyOC41IDIwIDI4LjVDMTkgMjguNSAxNyAyNSAxNiAyNUMxNS44MDIgMjUgMTUuNTI1NyAyNS4wNzg0IDE1LjIwOTggMjUuMjA0MUMxMy4wNjgxIDI2LjA1NjQgMTAuNzIxNCAyNi40ODg1IDguNTgxMTUgMjUuNjMyNUw3IDI1TDYgMThaIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTI0IDVWMTUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMzYgMTFWNC45OTk5OUMzNiA0Ljk5OTk5IDM0LjUgNy45OTk5OSAzMCA0Ljk5OTk5QzI1LjUgMS45OTk5OSAyNCA0Ljk5OTk5IDI0IDQuOTk5OTlWMTFDMjQgMTEgMjUuNSA3Ljk5OTk5IDMwIDExQzM0LjUgMTQgMzYgMTEgMzYgMTFaIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'
+          break;
+        case 3:
+          typeText = '基础设施'
+
+          iconUrl = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik00IDRINDQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cmVjdCB4PSI4IiB5PSI0IiB3aWR0aD0iMzIiIGhlaWdodD0iNDAiIHJ4PSIyIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yMCAzMkgyOFY0NEgyMFYzMloiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTUgMTJMMTcgMTIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMTUgMThMMTcgMTgiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMjMgMTJMMjUgMTIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMjMgMThMMjUgMTgiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMzEgMTJMMzMgMTIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMzEgMThMMzMgMTgiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNNCA0NEg0NCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yOCAzMkgzMEMzMC41NTIzIDMyIDMxLjAwOTggMzEuNTQ4IDMwLjkwNDQgMzEuMDA1OEMzMC4zNTE3IDI4LjE2NTMgMjcuNDcwOSAyNiAyNCAyNkMyMC41MjkxIDI2IDE3LjY0ODMgMjguMTY1MyAxNy4wOTU2IDMxLjAwNThDMTYuOTkwMiAzMS41NDggMTcuNDQ3NyAzMiAxOCAzMkgyMCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg=='
+          break;
+
+        default:
+          break;
+      }
+      
+      starsDiv += '</div>'
+      const content = [];
+
+      const title = `<div style="min-width:150px;font-weight:700">${Name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(地物代号:<span style="color:red">${PlaceCode}</span>)</div>`
+      if (Image1Url !== '' && Image2Url !== '') {
+        content.push(`<div><img src="${Image1Url}"style="width:120px;height:80px;border:1px black solid" /><img src="${Image2Url}"style="width:120px;height:80px;border:1px black solid" /></div>`);
+      }
+      else if (Image1Url !== '' && Image2Url === '') {
+        content.push(`<img src="${Image1Url}"style="width:180px;height:120px;border:1px black solid" />`);
+      }
+      else if (Image1Url === '' && Image2Url !== '') {
+        content.push(`<img src="${Image2Url}"style="width:180px;height:120px;border:1px black solid" />`);
+      }
+      content.push(`<div style="font-size:16px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start">类型:<span style="font-size:16px;font-weight:700;">${typeText}</span><img src=${iconUrl} style="width:30px;height:30px;margin-left:20px" /></div>`)
+      content.push(`<div style="font-size:16px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start">评分:<span style="font-size:18px;font-weight:700;color:red;margin-right:20px">${Score}</span> ${starsDiv}</div>`);
+      content.push(`<span style="font-size:16px">详细地址: ${Address}</span>`);
+      content.push(`<span style="font-size:16px">联系电话: ${Number}</span>`);
+      content.push(`<span style="font-size:16px">推荐人:<span style="font-weight:700;font-size:16px">
+    ${studentName}</span></span>`);
+      content.push(`<span style="font-size:16px">推荐语: <span style="color:red;font-size:14px">${FounderComment}</span></span>`);
+      var newPlaceInfoWindow = new AMap.InfoWindow({
+        isCustom: true,  //使用自定义窗体
+        content: createPlaceInfoWindow(title, content.join("<br/>"), [Longitude, Latitude], PlaceCode, CommentNumber),
+        offset: new AMap.Pixel(16, -45)
+      });
+      const lng = item.Longitude
+      const lat = item.Latitude
+      const Marker = new AMap.Marker({
+        position: [lng, lat],
+        map: map,
+        icon: iconUrl,
+      });
+      Marker.setLabel({
+        offset: new AMap.Pixel(-25, -25),
+        content: `<span style='color:black;font-weight:600;text-align:center;'>${Name}</span><span style='font-weight:400'></span>`
+      });
+      AMap.event.addListener(Marker, 'click', function () {
+        newPlaceInfoWindow.open(map, Marker.getPosition());
+        map.setZoom(17)
+        if (isPhone) {
+          map.setCenter([lng - 0.0005, lat + 0.0003]);
+        } else {
+          map.setCenter([lng + 0.0001, lat + 0.00015]);
+        }
+      });
+      PlaceMarkerList.push(Marker)
+
+    })
+
+    map.add(PlaceMarkerList)
+    const Marker = new AMap.Marker({
+      position: userPosition,
+      map: map,
+      zindex: 101,
+      icon: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0yNCAxNEMyNi43NjE0IDE0IDI5IDExLjc2MTQgMjkgOUMyOSA2LjIzODU4IDI2Ljc2MTQgNCAyNCA0QzIxLjIzODYgNCAxOSA2LjIzODU4IDE5IDlDMTkgMTEuNzYxNCAyMS4yMzg2IDE0IDI0IDE0WiIgZmlsbD0iIzEzRiIgc3Ryb2tlPSIjMTNGIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yNyAyMEgyMUMyMC4wNzEzIDIwIDE5LjYwNyAyMCAxOS4yMTU5IDIwLjAzODVDMTUuNDE3NiAyMC40MTI2IDEyLjQxMjYgMjMuNDE3NiAxMi4wMzg1IDI3LjIxNTlDMTIgMjcuNjA3IDEyIDI4LjA3MTMgMTIgMjlIMzZDMzYgMjguMDcxMyAzNiAyNy42MDcgMzUuOTYxNSAyNy4yMTU5QzM1LjU4NzQgMjMuNDE3NiAzMi41ODI0IDIwLjQxMjYgMjguNzg0MSAyMC4wMzg1QzI4LjM5MyAyMCAyNy45Mjg3IDIwIDI3IDIwWiIgZmlsbD0iIzEzRiIgc3Ryb2tlPSIjMTNGIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik00MSAyNi43ODM3QzQyLjkwMTcgMjguMDA3OSA0NCAyOS40NTI3IDQ0IDMxQzQ0IDM1LjQxODMgMzUuMDQ1NyAzOSAyNCAzOUMxMi45NTQzIDM5IDQgMzUuNDE4MyA0IDMxQzQgMjkuNDUyNyA1LjA5ODI3IDI4LjAwNzkgNyAyNi43ODM3IiBzdHJva2U9IiMxM0YiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTE5IDM0TDI0IDM5TDE5IDQ0IiBzdHJva2U9IiMxM0YiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+",
+    });
+    Marker.setLabel({
+      offset: new AMap.Pixel(-15, -25),
+      zindex: 101,
+      content: "<span style='color:red;font-weight:600;text-align:center;'>我的位置</span>"
+    });
+    setMyMarker(Marker)
+    map.setFitView(); //自适应
   }
+  function showPlace(chatPlaceInfo) {
+    const AMap = window.AMap
+
+    if(!map){
+      map = myMapObj
+    }
+    let typeText = ''
+    let imgUrl = ''
+
+    let darkStar = `<img style="width:15px;height:15px;" src="data:image/png;base64,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" />`
+    let lightStar = `<img style="width:15px;height:15px;" src="data:image/png;base64,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" />`
+    let halfStar = `<img style="width:15px;height:15px;" src="data:image/png;base64,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" />`
+
+    let {
+      PlaceCode,
+      Name,
+      Address,
+      CommentNumber,
+      FounderComment,
+      Number,
+      Type,
+      Score,
+      Image1Url,
+      Image2Url,
+      Longitude,
+      Latitude,
+    } = chatPlaceInfo
+    let starsDiv = '<div style="width:60px;height:12px;display:flex;align-items: center;justify-content:flex-start">'
+
+    for (let i = 1; i < 6; i++) {
+      if (i <= Score) {
+        starsDiv += lightStar
+      } else if (Score + 0.51 >= i) {
+        starsDiv += halfStar
+      } else {
+        starsDiv += darkStar
+      }
+    }
+    Score = String(Score)
+    if(Score.length>5){
+      Score = Score.slice(0,5)
+    }
+    let iconUrl = ''
+    switch (Type) {
+      case 1:
+        typeText = '美食'
+        iconUrl = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik02IDE4SDQyVjI0QzQyIDI3LjMxMzcgMzkuMzEzNyAzMCAzNiAzMEgxMkM4LjY4NjI5IDMwIDYgMjcuMzEzNyA2IDI0VjE4WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik00MCA0Mkg4IiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTEzIDQyTDE2IDMwIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTM1IDQyTDMyIDMwIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTMwIDE4TDI3IDRIMjFMMTggMTgiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzYgMTFINDAiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNOCAxMUgxMiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg=='
+        break;
+      case 2:
+        typeText = '娱乐'
+
+        iconUrl = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik05IDI2QzkgMjYgOC45MjQyOSAyNi43ODY3IDggMzFDNy4wMjA1MyAzNS40NjQ4IDQgNDQgNCA0NEg0NEM0NCA0NCA0MC45Nzk1IDM1LjQ2NDggNDAgMzFDMzkuMDc1NyAyNi43ODY3IDM5IDI2IDM5IDI2IiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIwIDI4QzIxIDM3IDE2IDQ0IDE2IDQ0IiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTI4IDI4QzI3IDM3IDMyIDQ0IDMyIDQ0IiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTYgMThDNiAxOCAxMy41OTIzIDE3Ljk0NTIgMTcgMTdDMTkuODY1OSAxNi4yMDUxIDI0IDE0IDI0IDE0QzI0IDE0IDI3LjgyMjkgMTYuMTk0NCAzMC41IDE3QzM0LjA3MjIgMTguMDc1IDQyIDE4IDQyIDE4TDQxIDI1QzQxIDI1IDM3IDI3IDM2IDI3QzM1IDI3IDMzIDI1IDMyIDI1QzMxIDI1IDI4LjUgMjggMjggMjhDMjcuNSAyOCAyNSAyNSAyNCAyNUMyMyAyNSAyMSAyOC41IDIwIDI4LjVDMTkgMjguNSAxNyAyNSAxNiAyNUMxNS44MDIgMjUgMTUuNTI1NyAyNS4wNzg0IDE1LjIwOTggMjUuMjA0MUMxMy4wNjgxIDI2LjA1NjQgMTAuNzIxNCAyNi40ODg1IDguNTgxMTUgMjUuNjMyNUw3IDI1TDYgMThaIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTI0IDVWMTUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMzYgMTFWNC45OTk5OUMzNiA0Ljk5OTk5IDM0LjUgNy45OTk5OSAzMCA0Ljk5OTk5QzI1LjUgMS45OTk5OSAyNCA0Ljk5OTk5IDI0IDQuOTk5OTlWMTFDMjQgMTEgMjUuNSA3Ljk5OTk5IDMwIDExQzM0LjUgMTQgMzYgMTEgMzYgMTFaIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'
+        break;
+      case 3:
+        typeText = '基础设施'
+
+        iconUrl = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik00IDRINDQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cmVjdCB4PSI4IiB5PSI0IiB3aWR0aD0iMzIiIGhlaWdodD0iNDAiIHJ4PSIyIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yMCAzMkgyOFY0NEgyMFYzMloiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTUgMTJMMTcgMTIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMTUgMThMMTcgMTgiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMjMgMTJMMjUgMTIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMjMgMThMMjUgMTgiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMzEgMTJMMzMgMTIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMzEgMThMMzMgMTgiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNNCA0NEg0NCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yOCAzMkgzMEMzMC41NTIzIDMyIDMxLjAwOTggMzEuNTQ4IDMwLjkwNDQgMzEuMDA1OEMzMC4zNTE3IDI4LjE2NTMgMjcuNDcwOSAyNiAyNCAyNkMyMC41MjkxIDI2IDE3LjY0ODMgMjguMTY1MyAxNy4wOTU2IDMxLjAwNThDMTYuOTkwMiAzMS41NDggMTcuNDQ3NyAzMiAxOCAzMkgyMCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg=='
+        break;
+
+      default:
+        break;
+    }
+
+    starsDiv += '</div>'
+    const content = [];
+
+    const title = `<div style="min-width:150px;font-weight:700">${Name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(地物代号:<span style="color:red">${PlaceCode}</span>)</div>`
+    if (Image1Url !== '' && Image2Url !== '') {
+      content.push(`<div><img src="${Image1Url}"style="width:120px;height:80px;border:1px black solid" /><img src="${Image2Url}"style="width:120px;height:80px;border:1px black solid" /></div>`);
+    }
+    else if (Image1Url !== '' && Image2Url === '') {
+      content.push(`<img src="${Image1Url}"style="width:180px;height:120px;border:1px black solid" />`);
+    }
+    else if (Image1Url === '' && Image2Url !== '') {
+      content.push(`<img src="${Image2Url}"style="width:180px;height:120px;border:1px black solid" />`);
+    }
+    content.push(`<div style="font-size:16px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start">类型:<span style="font-size:16px;font-weight:700;">${typeText}</span><img src=${iconUrl} style="width:30px;height:30px;margin-left:20px" /></div>`)
+    content.push(`<div style="font-size:16px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start">评分:<span style="font-size:18px;font-weight:700;color:red;margin-right:20px">${Score}</span> ${starsDiv}</div>`);
+    content.push(`<span style="font-size:16px">详细地址: ${Address}</span>`);
+    content.push(`<span style="font-size:16px">联系电话: ${Number}</span>`);
+    content.push(`<span style="font-size:16px">推荐人:<span style="font-weight:700;font-size:16px">
+    ${studentName}</span></span>`);
+    content.push(`<span style="font-size:16px">推荐语: <span style="color:red;font-size:14px">${FounderComment}</span></span>`);
+    var newPlaceInfoWindow = new AMap.InfoWindow({
+      isCustom: true,  //使用自定义窗体
+      content: createPlaceInfoWindow(title, content.join("<br/>"), [Longitude, Latitude], PlaceCode, CommentNumber),
+      offset: new AMap.Pixel(16, -45)
+    });
+    const lng = Longitude
+    const lat = Latitude
+    const PlaceMarker = new AMap.Marker({
+      position: [lng, lat],
+      map: map,
+      icon: iconUrl,
+    });
+    PlaceMarker.setLabel({
+      offset: new AMap.Pixel(-25, -25),
+      content: `<span style='color:black;font-weight:600;text-align:center;'>${Name}</span><span style='font-weight:400'></span>`
+    });
+
+    map.add(PlaceMarker)
+    const Marker = new AMap.Marker({
+      position: userPosition,
+      map: map,
+      zindex: 101,
+      icon: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0yNCAxNEMyNi43NjE0IDE0IDI5IDExLjc2MTQgMjkgOUMyOSA2LjIzODU4IDI2Ljc2MTQgNCAyNCA0QzIxLjIzODYgNCAxOSA2LjIzODU4IDE5IDlDMTkgMTEuNzYxNCAyMS4yMzg2IDE0IDI0IDE0WiIgZmlsbD0iIzEzRiIgc3Ryb2tlPSIjMTNGIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yNyAyMEgyMUMyMC4wNzEzIDIwIDE5LjYwNyAyMCAxOS4yMTU5IDIwLjAzODVDMTUuNDE3NiAyMC40MTI2IDEyLjQxMjYgMjMuNDE3NiAxMi4wMzg1IDI3LjIxNTlDMTIgMjcuNjA3IDEyIDI4LjA3MTMgMTIgMjlIMzZDMzYgMjguMDcxMyAzNiAyNy42MDcgMzUuOTYxNSAyNy4yMTU5QzM1LjU4NzQgMjMuNDE3NiAzMi41ODI0IDIwLjQxMjYgMjguNzg0MSAyMC4wMzg1QzI4LjM5MyAyMCAyNy45Mjg3IDIwIDI3IDIwWiIgZmlsbD0iIzEzRiIgc3Ryb2tlPSIjMTNGIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik00MSAyNi43ODM3QzQyLjkwMTcgMjguMDA3OSA0NCAyOS40NTI3IDQ0IDMxQzQ0IDM1LjQxODMgMzUuMDQ1NyAzOSAyNCAzOUMxMi45NTQzIDM5IDQgMzUuNDE4MyA0IDMxQzQgMjkuNDUyNyA1LjA5ODI3IDI4LjAwNzkgNyAyNi43ODM3IiBzdHJva2U9IiMxM0YiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTE5IDM0TDI0IDM5TDE5IDQ0IiBzdHJva2U9IiMxM0YiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+",
+    });
+    Marker.setLabel({
+      offset: new AMap.Pixel(-15, -25),
+      zindex: 101,
+      content: "<span style='color:red;font-weight:600;text-align:center;'>我的位置</span>"
+    });
+    setMyMarker(Marker)
+    AMap.event.addListener(PlaceMarker, 'click', function () {
+      newPlaceInfoWindow.open(map, PlaceMarker.getPosition());
+      map.setZoom(18)
+    });
+    if (isPhone) {
+      map.setCenter([lng - 0.0005, lat + 0.0003]);
+    } else {
+      map.setCenter([lng + 0.0001, lat + 0.00015]);
+    }
+    newPlaceInfoWindow.open(map, PlaceMarker.getPosition());
+    map.setZoom(18)
+  }
+  useEffect(() => {
+    if (chatPlaceInfo.PlaceCode) {
+      showPlace(chatPlaceInfo)
+    }
+  }, [chatPlaceInfo])
 
   useEffect(() => {
     if (previewPlaceMessage.placeName === undefined) {
@@ -884,54 +1172,34 @@ function Map(props) {
     });
 
     //构建自定义信息窗体
-    function createInfoWindow(title, content) {
-      var info = document.createElement("div");
-      info.className = "custom-info input-card content-window-card";
 
-      //可以通过下面的方式修改自定义窗体的宽高
-      // info.style.width = "400px";
-      // 定义顶部标题
-      var top = document.createElement("div");
-      var titleD = document.createElement("div");
-      var closeX = document.createElement("img");
-      top.className = "info-top";
-      titleD.innerHTML = title;
-      closeX.src = "https://webapi.amap.com/images/close2.gif";
-      closeX.onclick = closeInfoWindow;
-
-      top.appendChild(titleD);
-      top.appendChild(closeX);
-      info.appendChild(top);
-
-      // 定义中部内容
-      var middle = document.createElement("div");
-      middle.className = "info-middle";
-      middle.style.backgroundColor = 'white';
-      middle.innerHTML = content;
-      info.appendChild(middle);
-
-      // 定义底部内容
-      var bottom = document.createElement("div");
-      bottom.className = "info-bottom";
-      bottom.style.position = 'relative';
-      bottom.style.top = '0px';
-      bottom.style.margin = '0 auto';
-      var sharp = document.createElement("img");
-      sharp.src = "https://webapi.amap.com/images/sharp.png";
-      bottom.appendChild(sharp);
-      info.appendChild(bottom);
-      return info;
-    }
 
     const { placeName,
       address,
-      command,
+      comment,
       phoneNumber,
       type,
       score,
       image1Url,
       image2Url,
-     } = previewPlaceMessage
+    } = previewPlaceMessage
+
+    function closeInfoWindow() {
+      map.clearInfoWindow();
+      setPreviewPlaceMessage({})
+      map.on('click', function (ev) {
+        // 触发事件的对象
+        var target = ev.target;
+        // 触发事件的地理坐标，AMap.LngLat 类型
+        var lnglat = ev.lnglat;
+        // 触发事件的像素坐标，AMap.Pixel 类型
+        var pixel = ev.pixel;
+        // 触发事件类型
+        var type = ev.type;
+        setMyMarkerPosition([lnglat.lng, lnglat.lat])
+        setPlacePosition([lnglat.lng, lnglat.lat])
+      });
+    }
 
     let typeText = ''
     let imgUrl = ''
@@ -957,7 +1225,7 @@ function Map(props) {
     }
     starsDiv += '</div>'
     const content = [];
-    
+
     const title = `<div style="min-width:150px;font-weight:700">${placeName}</div>`
     if (image1Url !== '' && image2Url !== '') {
       content.push(`<div><img src="${image1Url}"style="width:120px;height:80px;border:1px black solid" /><img src="${image2Url}"style="width:120px;height:80px;border:1px black solid" /></div>`);
@@ -974,33 +1242,12 @@ function Map(props) {
     content.push(`<span style="font-size:16px">联系电话: ${phoneNumber}</span>`);
     content.push(`<span style="font-size:16px">推荐人:<span style="font-weight:700;font-size:16px">
     ${studentName}</span></span>`);
-    content.push(`<span style="font-size:16px">推荐语: <span style="color:red;font-size:14px">${command}</span></span>`);
+    content.push(`<span style="font-size:16px">推荐语: <span style="color:red;font-size:14px">${comment}</span></span>`);
     var newPlaceInfoWindow = new AMap.InfoWindow({
       isCustom: true,  //使用自定义窗体
-      content: createInfoWindow(title, content.join("<br/>")),
+      content: createInfoWindow(title, content.join("<br/>"), closeInfoWindow),
       offset: new AMap.Pixel(16, -45)
     });
-
-    //关闭信息窗体
-    function closeInfoWindow() {
-      
-      map.clearInfoWindow();
-      setPreviewPlaceMessage({})
-      map.on('click', function (ev) {
-        // 触发事件的对象
-        var target = ev.target;
-        // 触发事件的地理坐标，AMap.LngLat 类型
-        var lnglat = ev.lnglat;
-        console.log("lnglat=", lnglat);
-        // 触发事件的像素坐标，AMap.Pixel 类型
-        var pixel = ev.pixel;
-        // 触发事件类型
-        var type = ev.type;
-        setMyMarkerPosition([lnglat.lng, lnglat.lat])
-        setPlacePosition([lnglat.lng, lnglat.lat])
-      });
-    }
-
     const icon = new AMap.Icon({
       image: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC4wMSIvPjxwYXRoIGQ9Ik00IDEySDQ0VjIwTDQyLjYwMTUgMjAuODM5MUM0MC4zODQ3IDIyLjE2OTIgMzcuNjE1MyAyMi4xNjkyIDM1LjM5ODUgMjAuODM5MUwzNCAyMEwzMi42MDE1IDIwLjgzOTFDMzAuMzg0NyAyMi4xNjkyIDI3LjYxNTMgMjIuMTY5MiAyNS4zOTg1IDIwLjgzOTFMMjQgMjBMMjIuNjAxNSAyMC44MzkxQzIwLjM4NDcgMjIuMTY5MiAxNy42MTUzIDIyLjE2OTIgMTUuMzk4NSAyMC44MzkxTDE0IDIwTDEyLjYwMTUgMjAuODM5MUMxMC4zODQ3IDIyLjE2OTIgNy42MTUzMSAyMi4xNjkyIDUuMzk4NTMgMjAuODM5MUw0IDIwVjEyWiIgZmlsbD0iIzAwMCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik04IDIyLjQ4ODlWNDRINDBWMjIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNOCAxMS44MjIyVjRINDBWMTIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cmVjdCB4PSIxOSIgeT0iMzIiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMiIgZmlsbD0iIzAwMCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==',
       size: new AMap.Size(24, 24)
@@ -1023,14 +1270,32 @@ function Map(props) {
     setPlaceMarker(Marker)
 
 
-  }, [previewPlaceMessage, placePosition])
+  }, [previewPlaceMessage, placePosition, isPhone])
+
+  useEffect(() => {
+    if (placeInfoList && placeInfoList.length > 0) {
+      const AMap = window.AMap
+      map = new AMap.Map('container', {
+        zoom: 15, //缩放级别
+        center: userPosition,
+        resizeEnable: true,
+        // layers: [new AMap.TileLayer.Satellite()],  //设置图层,可设置成包含一个或多个图层的数组
+        // mapStyle: 'amap://styles/whitesmoke',  //设置地图的显示样式
+        viewMode: '3D',  //设置地图模式
+        pitch: 0,//地图仰角设定
+        lang: 'zh_cn',  //设置地图语言类型
+      });
+
+      setMyMapObj(map)
+      getPlaceMarker(placeInfoList)
+    }
+  }, [placeInfoList, userPosition])
   return (
     <div className="map-container" onClick={() => {
       isPositionMode && addMarker()
       isAddPlaceMode && addPlaceMarker()
     }}>
-      {isMessageBoxShow && <div className="message-box">
-      </div>}
+
       {isDrivePanelShow && <div className="drive-friend-panel">
         <div className="drive-friend-close" onClick={() => {
           location.reload()
