@@ -34,6 +34,7 @@ function router() {
         <Router>
             <div style={{ width: "100%", height: 80 }} />
             <NavBar
+                isGamMode={isGamMode}
                 setIsMessageBoxShow={setIsMessageBoxShow}
                 isMessageBoxShow={isMessageBoxShow}
                 setChatPlaceInfo={setChatPlaceInfo}
@@ -77,7 +78,7 @@ function router() {
                 {/* <Route path='/app' component={SideBar} /> */}
                 <Route path='/' render={() =>
                     <Map
-                    setIsMessageBoxShow={setIsMessageBoxShow}
+                        setIsMessageBoxShow={setIsMessageBoxShow}
                         chatPlaceInfo={chatPlaceInfo}
                         setCommentMode={setCommentMode}
                         placeInfoList={placeInfoList}

@@ -74,9 +74,13 @@ function Map(props) {
   const eastPosition = [114.40520669549704, 30.519101428977407]
   const northPosition = [114.3994557698071, 30.528924839045622]
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   initMap()
+  // }, [])
+
+  useEffect(()=>{
     initMap()
-  }, [])
+  },[isPhone])
   //关闭信息窗体
   function closePlaceInfoWindow() {
     SeeComment(0)
@@ -261,7 +265,6 @@ function Map(props) {
     // map.setFitView();
   }
   function initEvent() {
-
     const AMap = window.AMap
     let infoNew = getInfoWindow("未来城校区", newJPG, "湖北省武汉市东湖新技术开发区锦程街68号")
     let infoOld = getInfoWindow("南望山校区", oldJPG, "湖北省武汉市鲁磨路388号")
@@ -273,6 +276,7 @@ function Map(props) {
     const areaBtn = document.querySelector('.area')
     const toolBtn = document.querySelector('.tool')
     AMap.event.addListener(newMarker, 'click', function () {
+      
       infoNew.open(map, newMarker.getPosition());
       map.setCenter(newPosition);
       map.setZoom(18)
@@ -1287,6 +1291,8 @@ function Map(props) {
       });
 
       setMyMapObj(map)
+      initMarker()
+      initEvent()
       getPlaceMarker(placeInfoList)
     }
   }, [placeInfoList, userPosition])

@@ -5,9 +5,9 @@ class Footer extends Component {
     render() {
         return (
             <div className="footer-container">
-                <div className="footer-main-text">
-                    footer
-                </div>
+                <a href="https://beian.miit.gov.cn/" target="_blank" className="footer-main-text" >
+                    粤ICP备20008700号
+                </a>
             </div>
         );
     }

@@ -25,12 +25,12 @@ function CommentBox(props) {
         if (res.data.code !== 1) {
             showToast(res.data.message, 2000)
         }
-        setCommentList(res.data.comment_list)
+        setCommentList(res.data.comment_list.reverse())
 
     }
     useEffect(() => {
         getComment(CommentMode)
-    }, [])
+    }, [CommentMode])
     const submitComment = async () => {
         if (myComment.trim() === '') {
             setMyComment('')

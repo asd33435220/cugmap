@@ -71,11 +71,11 @@
       position: absolute;
       right: 5px;
       top: 5px;
-      width: 30px;
-      height: 30px;
-      border-radius: 10px;
+      width: 24px;
+      height: 24px;
+      border-radius: 12px;
       text-align: center;
-      line-height: 20px;
+      line-height: 24px;
   }
 
   .chat-message-title {
@@ -251,7 +251,7 @@
 
           }
 
-          .receive-message-placecode {
+          .receive-message-with-placecode {
             font-style: oblique;
             font-weight: 700;
             max-width: 200px;

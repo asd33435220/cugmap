@@ -41,6 +41,7 @@ function NavBar(props) {
         setChatPlaceInfo,
         setIsMessageBoxShow,
         isMessageBoxShow,
+        isGamMode,
     }
         = props
     const isMap = window.location.pathname === "/"
@@ -139,14 +140,18 @@ function NavBar(props) {
     }
 
     async function getChatPlace(placeCode) {
-        console.log('placeCode',placeCode);
-        const res = await React.$http.get("/place/chat",{
-            params:{
+        console.log('placeCode', placeCode);
+        const res = await React.$http.get("/place/chat", {
+            params: {
                 placeCode
             }
         })
+        console.log('ChatPlaceRes', res);
+        if(!res.data.place_info){
+            showToast('该地点不存在,请确认地物代号')
+            return
+        }
         setChatPlaceInfo(res.data.place_info)
-        console.log('ChatPlaceRes',res);
     }
 
     useEffect(() => {
@@ -300,6 +305,10 @@ function NavBar(props) {
                                             setIsAddPlaceMode(true)
                                             window.location = "/addplace"
                                         }}>新增地点</div>}
+                                        {isPositionMode && <div className="nav-right-phone-more-pannel-line" onClick={() => {
+                                        window.location = "/fun"
+                                        setIsFunMode(true)
+                                    }}> 吃喝玩乐</div>}
 
                                         {isPositionMode && <div className="nav-right-phone-more-pannel-line"
                                             onClick={() => {
@@ -334,7 +343,11 @@ function NavBar(props) {
                                     setIsAddPlaceMode(true)
                                     window.location = "/addplace"
                                 }}>新增地点</div>}
-
+                                {isGamMode && <div className="nav-right-button" onClick={() => {
+                                        window.location = "/fun"
+                                        setIsFunMode(true)
+                                    }}> 吃喝玩乐</div>}
+                                
                                 {isPositionMode && <div className="nav-right-button" onClick={() => {
                                     handleChangePosition()
                                 }}>保存我的信息
@@ -407,6 +420,9 @@ function NavBar(props) {
                                             setIsMore(false)
                                             setOpenTools(!openTools)
                                         }}> {openTools ? "关闭" : "打开"}工具栏</div>
+                                    {isLogin && <div className="nav-right-phone-more-pannel-line" onClick={() => {
+                                        handleLogout()
+                                    }}> 退出登陆</div>}
 
                                 </div>
                             )}

@@ -20,13 +20,9 @@ function MessageBox(props) {
     const [totalNewMessage, setTotalNewMessage] = useState(0)
 
     async function getMyMessage() {
-        const res = await React.$http.get("/message/allmymessage")
+        const res = await React.$http.get("/message/mymessage")
         console.log('res', res);
         setMessageList(res.data.message_list)
-        // const ReceiverList = res.data.receiver_message_list
-        // const SenderList = res.data.sender_message_list
-        // setReceiverList(ReceiverList)
-        // setSenderList(SenderList)
     }
 
     useEffect(() => {
@@ -76,6 +72,7 @@ function MessageBox(props) {
                 }
             }
         })
+        setTotalNewMessage(total)
         for (let key in userObj) {
             newUserList.push(userObj[key])
         }
@@ -133,7 +130,6 @@ function MessageBox(props) {
                 }
             }
         })
-        setTotalNewMessage(total)
 
         senderList && senderList.map(item => {
             const {
@@ -231,7 +227,7 @@ function MessageBox(props) {
                 <div className={"chat-right-button"} onClick={() => {
                     setIsClose(true)
                 }}></div>
-                {totalNewMessage > 0 && <div className="chat-total-new-message">
+                {!partnerInfo.name && totalNewMessage > 0 && <div className="chat-total-new-message">
                     {totalNewMessage}
                 </div>}
                 {!partnerInfo.name ? <>
