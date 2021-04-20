@@ -86,7 +86,6 @@ function NavBar(props) {
         React.$http.get('/token')
             .then(res => {
                 console.log(res);
-                console.log("isLogin", isLogin);
                 if (res.data.with_token && !isLogin) {
                     setIsLogin(true);
                     setStudentId(res.data.student_id)
@@ -102,13 +101,24 @@ function NavBar(props) {
                     setStudentId("")
                     setStudentName("")
                     const pathname = window.location.pathname
-                    const isRedirect = pathname === "/position" || pathname === "/message"
-                    if (isRedirect) window.location = "/"
+                    const isRedirect = pathname === "/position"
+                        || pathname === "/message"
+                        || pathname === "/fun"
+                        // || pathname === "/gam"
+                        || pathname === "/addplace"
+                    if (isRedirect) {
+                        showToast('您还没有登陆，先去登陆吧！',2000,"/login")
+                    }
                 } else {
                     const pathname = window.location.pathname
-                    const isRedirect = pathname === "/position" || pathname === "/message"
-                    console.log("isRedirect", isRedirect);
-                    if (isRedirect) window.location = "/"
+                    const isRedirect = pathname === "/position"
+                        || pathname === "/message"
+                        || pathname === "/fun"
+                        // || pathname === "/gam"
+                        || pathname === "/addplace"
+                    if (isRedirect) {
+                        showToast('您还没有登陆，先去登陆吧！',2000,"/login")
+                    }
                 }
             })
     }
@@ -117,14 +127,20 @@ function NavBar(props) {
 
         const res = await React.$http.get("/user/position")
         console.log("position-res", res);
+        
         if (res.data.code === -2) {
             showToast(res.data.message, 2000, "/position")
+            return
         }
-        showToast("已经为你匹配附近的校友,快给他们留言吧!", 3000)
-        setIsGamMode(true)
-        setIsMessageBoxShow(true)
-        setUserPosition([res.data.user_lng, res.data.user_lat])
-        setNearbyUserList(res.data.user_list);
+        if(res.data.code === -1){
+            showToast(res.data.message, 2000, "/login")
+            return
+        }
+        // showToast("已经为你匹配附近的校友,快给他们留言吧!", 3000)
+        // setIsGamMode(true)
+        // setIsMessageBoxShow(true)
+        // setUserPosition([res.data.user_lng, res.data.user_lat])
+        // setNearbyUserList(res.data.user_list);
     }
 
     async function getPlace() {
@@ -147,7 +163,7 @@ function NavBar(props) {
             }
         })
         console.log('ChatPlaceRes', res);
-        if(!res.data.place_info){
+        if (!res.data.place_info) {
             showToast('该地点不存在,请确认地物代号')
             return
         }
@@ -157,6 +173,7 @@ function NavBar(props) {
     useEffect(() => {
         const pathname = window.location.pathname
         if (pathname === "/position") {
+            
             setIsPositionMode(true)
             setOpenTools(true)
             setNearbyUserList([])
@@ -306,9 +323,9 @@ function NavBar(props) {
                                             window.location = "/addplace"
                                         }}>新增地点</div>}
                                         {isPositionMode && <div className="nav-right-phone-more-pannel-line" onClick={() => {
-                                        window.location = "/fun"
-                                        setIsFunMode(true)
-                                    }}> 吃喝玩乐</div>}
+                                            window.location = "/fun"
+                                            setIsFunMode(true)
+                                        }}> 吃喝玩乐</div>}
 
                                         {isPositionMode && <div className="nav-right-phone-more-pannel-line"
                                             onClick={() => {
@@ -344,10 +361,10 @@ function NavBar(props) {
                                     window.location = "/addplace"
                                 }}>新增地点</div>}
                                 {isGamMode && <div className="nav-right-button" onClick={() => {
-                                        window.location = "/fun"
-                                        setIsFunMode(true)
-                                    }}> 吃喝玩乐</div>}
-                                
+                                    window.location = "/fun"
+                                    setIsFunMode(true)
+                                }}> 吃喝玩乐</div>}
+
                                 {isPositionMode && <div className="nav-right-button" onClick={() => {
                                     handleChangePosition()
                                 }}>保存我的信息
