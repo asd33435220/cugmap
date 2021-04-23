@@ -1,11 +1,12 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import Map from './Map/Map';
-import Register from './Register/Register';
-import Login from './Login/Login';
 import NavBar from './NavBar/NavBar';
 import Footer from './Footer/Footer';
 import { BrowserRouter as Router, Route, Switch, Link, NavLink } from 'react-router-dom';
+const Login = lazy(() => import(/*webpackChunkName: 'Login'*/'./Login/Login'))
+const Register = lazy(() => import(/*webpackChunkName: 'Register'*/'./Register/Register'))
+const renderLoader = () => { return (<p></p>) };
 
 
 function router() {
@@ -72,45 +73,47 @@ function router() {
                 CommentMode={CommentMode}
             />
             {/* <NavLink to="/login">登陆</NavLink> */}
-            <Switch>
-                <Route path='/register' component={Register} />
-                <Route path='/login' component={Login} />
-                {/* <Route path='/app' component={SideBar} /> */}
-                <Route path='/' render={() =>
-                    <Map
-                        setIsMessageBoxShow={setIsMessageBoxShow}
-                        chatPlaceInfo={chatPlaceInfo}
-                        setCommentMode={setCommentMode}
-                        placeInfoList={placeInfoList}
-                        previewPlaceMessage={previewPlaceMessage}
-                        setPreviewPlaceMessage={setPreviewPlaceMessage}
-                        placePosition={placePosition}
-                        setPlacePosition={setPlacePosition}
-                        isPhone={isPhone}
-                        openTools={openTools}
-                        setOpenTools={setOpenTools}
-                        isPositionMode={isPositionMode}
-                        isGamMode={isGamMode}
-                        setIsGamMode={setIsGamMode}
-                        setIsPositionMode={setIsPositionMode}
-                        setIsFunMode={setIsFunMode}
-                        isAddPlaceMode={isAddPlaceMode}
-                        setIsAddPlaceMode={setIsAddPlaceMode}
-                        isFunMode={isFunMode}
-                        myMarkerPosition={myMarkerPosition}
-                        setMyMarkerPosition={setMyMarkerPosition}
-                        nearbyUserList={nearbyUserList}
-                        userPosition={userPosition}
-                        studentId={studentId}
-                        studentName={studentName}
-                        setSignature={setSignature}
-                        signature={signature}
-                        myMapObj={myMapObj}
-                        setMyMapObj={setMyMapObj}
-                        receiverInfo={receiverInfo}
-                        setReceiverInfo={setReceiverInfo}
-                    />} />
-            </Switch>
+            <Suspense fallback={<></>}>
+                <Switch>
+                    <Route path='/register' component={Register} />
+                    <Route path='/login' component={Login} />
+                    {/* <Route path='/app' component={SideBar} /> */}
+                    <Route path='/' render={() =>
+                        <Map
+                            setIsMessageBoxShow={setIsMessageBoxShow}
+                            chatPlaceInfo={chatPlaceInfo}
+                            setCommentMode={setCommentMode}
+                            placeInfoList={placeInfoList}
+                            previewPlaceMessage={previewPlaceMessage}
+                            setPreviewPlaceMessage={setPreviewPlaceMessage}
+                            placePosition={placePosition}
+                            setPlacePosition={setPlacePosition}
+                            isPhone={isPhone}
+                            openTools={openTools}
+                            setOpenTools={setOpenTools}
+                            isPositionMode={isPositionMode}
+                            isGamMode={isGamMode}
+                            setIsGamMode={setIsGamMode}
+                            setIsPositionMode={setIsPositionMode}
+                            setIsFunMode={setIsFunMode}
+                            isAddPlaceMode={isAddPlaceMode}
+                            setIsAddPlaceMode={setIsAddPlaceMode}
+                            isFunMode={isFunMode}
+                            myMarkerPosition={myMarkerPosition}
+                            setMyMarkerPosition={setMyMarkerPosition}
+                            nearbyUserList={nearbyUserList}
+                            userPosition={userPosition}
+                            studentId={studentId}
+                            studentName={studentName}
+                            setSignature={setSignature}
+                            signature={signature}
+                            myMapObj={myMapObj}
+                            setMyMapObj={setMyMapObj}
+                            receiverInfo={receiverInfo}
+                            setReceiverInfo={setReceiverInfo}
+                        />} />
+                </Switch>
+            </Suspense>
             <Footer />
         </Router>
     );

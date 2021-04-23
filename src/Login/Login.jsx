@@ -12,6 +12,7 @@ function Login() {
             password: studentPassword,
         }
         const data = React.$qs.stringify(form)
+        console.log('qs-data',data);
         const res = await React.$http.post("/user/login", data)
         setIsAfterLogin(true)
         console.log("res.data", res.data);

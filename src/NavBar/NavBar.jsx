@@ -1,18 +1,21 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component, useState, useEffect, lazy, Suspense } from 'react';
 import LOGO from './images/logo.jpeg';
-import MessageBox from '../MessageBox/MessageBox'
-import PlaceBox from '../PlaceBox/PlaceBox'
-import CommentBox from '../CommentBox/CommentBox'
+// import MessageBox from '../MessageBox/MessageBox'
+// import PlaceBox from '../PlaceBox/PlaceBox'
+// import CommentBox from '../CommentBox/CommentBox'
+const MessageBox = lazy(() => import(/*webpackChunkName: 'MessageBox' */'../MessageBox/MessageBox'))
+const PlaceBox = lazy(() => import(/*webpackChunkName: 'PlaceBox' */'../PlaceBox/PlaceBox'))
+const CommentBox = lazy(() => import(/*webpackChunkName: 'CommentBox' */'../CommentBox/CommentBox'))
 import './NavBar.scss';
 
 function NavBar(props) {
     const {
         openTools,
+        setOpenTools,
         isPositionMode,
         setIsPositionMode,
         isFunMode,
         setIsFunMode,
-        setOpenTools,
         myMarkerPosition,
         setIsGamMode,
         setNearbyUserList,
@@ -37,7 +40,6 @@ function NavBar(props) {
         setPreviewPlaceMessage,
         setPlaceInfoList,
         CommentMode,
-        placeInfoList,
         setChatPlaceInfo,
         setIsMessageBoxShow,
         isMessageBoxShow,
@@ -107,7 +109,7 @@ function NavBar(props) {
                         // || pathname === "/gam"
                         || pathname === "/addplace"
                     if (isRedirect) {
-                        showToast('您还没有登陆，先去登陆吧！',2000,"/login")
+                        showToast('您还没有登陆，先去登陆吧！', 2000, "/login")
                     }
                 } else {
                     const pathname = window.location.pathname
@@ -117,7 +119,7 @@ function NavBar(props) {
                         // || pathname === "/gam"
                         || pathname === "/addplace"
                     if (isRedirect) {
-                        showToast('您还没有登陆，先去登陆吧！',2000,"/login")
+                        showToast('您还没有登陆，先去登陆吧！', 2000, "/login")
                     }
                 }
             })
@@ -127,20 +129,21 @@ function NavBar(props) {
 
         const res = await React.$http.get("/user/position")
         console.log("position-res", res);
-        
+        // const res2 = await React.$http.get("/user/position2")
+        // console.log("position-res2", res2);
         if (res.data.code === -2) {
             showToast(res.data.message, 2000, "/position")
             return
         }
-        if(res.data.code === -1){
+        if (res.data.code === -1) {
             showToast(res.data.message, 2000, "/login")
             return
         }
-        // showToast("已经为你匹配附近的校友,快给他们留言吧!", 3000)
-        // setIsGamMode(true)
-        // setIsMessageBoxShow(true)
-        // setUserPosition([res.data.user_lng, res.data.user_lat])
-        // setNearbyUserList(res.data.user_list);
+        showToast("已经为你匹配附近的校友,快给他们留言吧!", 3000)
+        setIsGamMode(true)
+        setIsMessageBoxShow(true)
+        setUserPosition([res.data.user_lng, res.data.user_lat])
+        setNearbyUserList(res.data.user_list);
     }
 
     async function getPlace() {
@@ -173,7 +176,7 @@ function NavBar(props) {
     useEffect(() => {
         const pathname = window.location.pathname
         if (pathname === "/position") {
-            
+
             setIsPositionMode(true)
             setOpenTools(true)
             setNearbyUserList([])
@@ -263,30 +266,32 @@ function NavBar(props) {
     }
     return (
         <div className="nav-container" >
-            {CommentMode > 0 && <CommentBox
-                changeGamMode={changeGamMode}
-                studentName={studentName}
-                CommentMode={CommentMode}
-                setReceiverInfo={setReceiverInfo}
-                showToast={showToast}
-                studentId={studentId}
-            />}
-            {isMessageBoxShow && <MessageBox
-                getChatPlace={getChatPlace}
-                receiverInfo={receiverInfo}
-                CommentMode={CommentMode}
-                setReceiverInfo={setReceiverInfo}
-                studentId={studentId}
-                getFriendInfo={getFriendInfo}
-                setIsMessageBoxShow={setIsMessageBoxShow}
-            />}
-            {isAddPlaceMode && <PlaceBox
-                studentId={studentId}
-                previewPlaceMessage={previewPlaceMessage}
-                setPreviewPlaceMessage={setPreviewPlaceMessage}
-                showToast={showToast}
-                isPhone={isPhone}
-                placePosition={placePosition} />}
+            <Suspense fallback={<div>loading</div>}>
+                {CommentMode > 0 && <CommentBox
+                    changeGamMode={changeGamMode}
+                    studentName={studentName}
+                    CommentMode={CommentMode}
+                    setReceiverInfo={setReceiverInfo}
+                    showToast={showToast}
+                    studentId={studentId}
+                />}
+                {isMessageBoxShow && <MessageBox
+                    getChatPlace={getChatPlace}
+                    receiverInfo={receiverInfo}
+                    CommentMode={CommentMode}
+                    setReceiverInfo={setReceiverInfo}
+                    studentId={studentId}
+                    getFriendInfo={getFriendInfo}
+                    setIsMessageBoxShow={setIsMessageBoxShow}
+                />}
+                {isAddPlaceMode && <PlaceBox
+                    studentId={studentId}
+                    previewPlaceMessage={previewPlaceMessage}
+                    setPreviewPlaceMessage={setPreviewPlaceMessage}
+                    showToast={showToast}
+                    isPhone={isPhone}
+                    placePosition={placePosition} />}
+            </Suspense>
             {isPanelShow && <div className="nav-panel">{panelMessage}</div>}
             <img src={LOGO} className="nav-logo" style={{ marginLeft: isPhone ? 5 : 40 }} onClick={() => {
                 window.open("https://www.cug.edu.cn/", '_blank')

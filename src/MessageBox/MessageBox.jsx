@@ -14,14 +14,13 @@ function MessageBox(props) {
     const [isClose, setIsClose] = useState(false)
     const [partnerInfo, setPartnerInfo] = useState({})
     const [inputMessage, setInputMessage] = useState('')
-    const [receiverList, setReceiverList] = useState([])
-    const [senderList, setSenderList] = useState([])
+    
     const [messageList, setMessageList] = useState([])
     const [totalNewMessage, setTotalNewMessage] = useState(0)
 
     async function getMyMessage() {
-        const res = await React.$http.get("/message/mymessage")
-        console.log('res', res);
+        const res = await React.$http.get("/message/allmymessage")
+        console.log('message-res', res);
         setMessageList(res.data.message_list)
     }
 
@@ -98,66 +97,6 @@ function MessageBox(props) {
         setIsClose(false)
         setPartnerInfo(userList[id])
     }, [receiverInfo])
-
-    useEffect(() => {
-        const userObj = {}
-        const newUserList = []
-        let total = 0
-        receiverList && receiverList.map(item => {
-            const {
-                SenderId,
-                Message,
-                SenderName,
-                SendTime,
-                SendTimeStr,
-                IsRead }
-                = item
-            if (!userObj[SenderId]) {
-                userObj[SenderId] = {
-                    senderId: SenderId, name: SenderName,
-                    ReceiverMessageList: [{ Message, SendTime, SendTimeStr, isRead: IsRead, placeCode: PlaceCode }],
-                    SenderMessageList: []
-                }
-                if (!IsRead) {
-                    userObj[SenderId].unReadMessageCount = 1
-                    total++
-                }
-            } else {
-                userObj[SenderId].ReceiverMessageList.push({ Message, SendTime, SendTimeStr, isRead: IsRead, placeCode: PlaceCode })
-                if (!IsRead) {
-                    total++
-                    userObj[SenderId].unReadMessageCount ? userObj[SenderId].unReadMessageCount++ : userObj[SenderId].unReadMessageCount = 1
-                }
-            }
-        })
-
-        senderList && senderList.map(item => {
-            const {
-                ReceiverId,
-                Message,
-                SendTime,
-                SendTimeStr,
-                IsRead,
-                ReceiverName }
-                = item
-            if (userObj[ReceiverId]) {
-                userObj[ReceiverId].SenderMessageList.push({ Message, SendTime, SendTimeStr, isSendFromMe: true, isRead: IsRead })
-            } else {
-                userObj[ReceiverId] = {
-                    senderId: ReceiverId, name: ReceiverName,
-                    ReceiverMessageList: [],
-                    SenderMessageList: [{ Message, SendTime, SendTimeStr, isRead: IsRead }],
-                }
-            }
-
-        })
-        for (let key in userObj) {
-            newUserList.push(userObj[key])
-        }
-        mergeUserByTime(newUserList)
-        newUserList.length > 0 && quickSortUserList(newUserList)
-        setUserList(newUserList)
-    }, [receiverList, senderList])
 
     useEffect(() => {
         if (partnerInfo.name) {
@@ -252,7 +191,9 @@ function MessageBox(props) {
                                     <div className="user-first-message">
                                         {item.unReadMessageCount &&
                                             <span className="user-unread-message-count">{`[${item.unReadMessageCount}条新消息]`}</span>}
-                                        {item.messageList[item.messageList.length - 1].Message}
+                                        <span className={item.messageList[item.messageList.length - 1].placeCode === 0 ? 'user-first-message-noplace' : 'user-first-message-withplace'}>
+                                            {`${item.messageList[item.messageList.length - 1].Message} ${item.messageList[item.messageList.length - 1].placeCode === 0 ?'':'(地点消息)'}`}
+                                            </span>
                                     </div>
                                 </div>
                             )

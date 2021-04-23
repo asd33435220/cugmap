@@ -1,5 +1,4 @@
 @keyframes close {
-
   0% {
     right: 0;
   }
@@ -10,7 +9,6 @@
 }
 
 @keyframes open {
-
   0% {
     right: -265px;
   }
@@ -148,17 +146,30 @@
 
       .user-first-message {
         margin-top: 6px;
-        font-style: 14px;
-        font-weight: 400;
-        color: #ccc;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
+       
 
         .user-unread-message-count {
           font-size: 12px;
           margin-right: 6px;
           color: rgba($color: #000, $alpha: .75);
+        }
+
+        .user-first-message-noplace{
+          font-size: 14px;
+          font-weight: 400;
+          color: #ccc;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+
+        .user-first-message-withplace{
+          font-size: 14px;
+          font-weight: 500;
+          color: rgb(13, 17, 221);
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
         }
       }
     }
@@ -252,6 +263,7 @@
           }
 
           .receive-message-with-placecode {
+            cursor: pointer;
             font-style: oblique;
             font-weight: 700;
             max-width: 200px;
@@ -313,12 +325,7 @@
 
           }
         }
-
-            
       }
-
-
-        
     }
 
     .chat-input{
