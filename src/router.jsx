@@ -35,6 +35,11 @@ function router() {
         <Router>
             <div style={{ width: "100%", height: 80 }} />
             <NavBar
+                openTools={openTools}
+                isPositionMode={isPositionMode}
+                setIsPositionMode={setIsPositionMode}
+                isFunMode={isFunMode}
+                setIsFunMode={setIsFunMode}
                 isGamMode={isGamMode}
                 setIsMessageBoxShow={setIsMessageBoxShow}
                 isMessageBoxShow={isMessageBoxShow}
@@ -45,16 +50,11 @@ function router() {
                 setPreviewPlaceMessage={setPreviewPlaceMessage}
                 isPhone={isPhone}
                 setIsPhone={setIsPhone}
-                openTools={openTools}
                 setOpenTools={setOpenTools}
-                isPositionMode={isPositionMode}
                 isGamMode={isGamMode}
-                isFunMode={isFunMode}
                 isAddPlaceMode={isAddPlaceMode}
                 setIsAddPlaceMode={setIsAddPlaceMode}
-                setIsPositionMode={setIsPositionMode}
                 setIsGamMode={setIsGamMode}
-                setIsFunMode={setIsFunMode}
                 myMarkerPosition={myMarkerPosition}
                 setUserPosition={setUserPosition}
                 studentId={studentId}

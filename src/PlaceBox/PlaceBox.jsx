@@ -154,7 +154,7 @@ function PlaceBox(props) {
         const data = React.$qs.stringify(form)
         const res = await React.$http.post("/place/add", data)
         console.log("res",res);
-        showToast(res.data.message,2000,"/fun")
+        showToast(res.data.message,1500,"/fun")
     }
     return (
         <>

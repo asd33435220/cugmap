@@ -74,7 +74,7 @@ function NavBar(props) {
         getPlaceType(placeType)
     }, [placeType])
 
-    const showToast = (message, time = 2000, url) => {
+    const showToast = (message, time = 1500, url) => {
         setPanelMessage(message)
         setIsPanelShow(true)
         setTimeout(() => {
@@ -109,7 +109,7 @@ function NavBar(props) {
                         // || pathname === "/gam"
                         || pathname === "/addplace"
                     if (isRedirect) {
-                        showToast('您还没有登陆，先去登陆吧！', 2000, "/login")
+                        showToast('您还没有登陆，先去登陆吧！', 1500, "/login")
                     }
                 } else {
                     const pathname = window.location.pathname
@@ -119,7 +119,7 @@ function NavBar(props) {
                         // || pathname === "/gam"
                         || pathname === "/addplace"
                     if (isRedirect) {
-                        showToast('您还没有登陆，先去登陆吧！', 2000, "/login")
+                        showToast('您还没有登陆，先去登陆吧！', 1500, "/login")
                     }
                 }
             })
@@ -132,14 +132,14 @@ function NavBar(props) {
         // const res2 = await React.$http.get("/user/position2")
         // console.log("position-res2", res2);
         if (res.data.code === -2) {
-            showToast(res.data.message, 2000, "/position")
+            showToast(res.data.message, 1500, "/position")
             return
         }
         if (res.data.code === -1) {
-            showToast(res.data.message, 2000, "/login")
+            showToast(res.data.message, 1500, "/login")
             return
         }
-        showToast("已经为你匹配附近的校友,快给他们留言吧!", 3000)
+        showToast("已经为你匹配附近的校友,快给他们留言吧!", 1500)
         setIsGamMode(true)
         setIsMessageBoxShow(true)
         setUserPosition([res.data.user_lng, res.data.user_lat])
@@ -150,9 +150,9 @@ function NavBar(props) {
         const res = await React.$http.get("/place/info")
         console.log("place-res", res);
         if (res.data.code === -2) {
-            showToast(res.data.message, 3000, "/fun")
+            showToast(res.data.message, 1500, "/fun")
         } else {
-            showToast('点击店铺可以评论并查看详细信息喔', 3000)
+            showToast('点击店铺可以评论并查看详细信息喔', 1500)
             setPlaceInfoList(res.data.place_info)
             setAllPlaceInfo(res.data.place_info)
         }
@@ -222,11 +222,11 @@ function NavBar(props) {
         setIsPanelShow(true)
         setTimeout(() => {
             setIsPanelShow(false)
-        }, 2000)
+        }, 1500)
         if (res.data.code === 1) {
-            showToast(res.data.message + ",即将跳转社交模式,快跟附近的校友聊天吧！", 2000, "/gam")
+            showToast(res.data.message + ",即将跳转社交模式,快跟附近的校友聊天吧！", 1500, "/gam")
         } else {
-            showToast(res.data.message + ",请重试", 2000)
+            showToast(res.data.message + ",请重试", 1500)
         }
 
     }
@@ -266,7 +266,7 @@ function NavBar(props) {
     }
     return (
         <div className="nav-container" >
-            <Suspense fallback={<div>loading</div>}>
+            <Suspense fallback={<></>}>
                 {CommentMode > 0 && <CommentBox
                     changeGamMode={changeGamMode}
                     studentName={studentName}
@@ -419,7 +419,7 @@ function NavBar(props) {
                                                     setPanelMessage("你需要先补充位置信息，才能开始社交喔！")
                                                     setTimeout(() => {
                                                         window.location = "/position"
-                                                    }, 2000)
+                                                    }, 1500)
                                                 }
                                             } else {
                                                 window.location = "/register"

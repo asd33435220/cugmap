@@ -30,13 +30,13 @@ function Register() {
             setRegisterMessage(res.data.message + "，即将跳转登陆页面")
             setTimeout(() => {
                 window.location = "/login"
-            }, 3000)
+            }, 1500)
         } else {
             setIsAfterRegister(true)
             setRegisterMessage(res.data.message + "，请重新注册")
             setTimeout(() => {
                 setIsAfterRegister(false)
-            }, 3000)
+            }, 1500)
         }
     }
     async function checkStudentId() {

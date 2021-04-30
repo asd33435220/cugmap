@@ -23,7 +23,7 @@ function CommentBox(props) {
         })
         console.log('commentRes', res);
         if (res.data.code !== 1) {
-            showToast(res.data.message, 2000)
+            showToast(res.data.message, 1500)
         }
         setCommentList(res.data.comment_list.reverse())
 
@@ -40,7 +40,7 @@ function CommentBox(props) {
         const date = new Date()
         const CommentTimeStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
         const newCommentList = [...commentList]
-        newCommentList.unshift({ CommentTimeStr, Commentator: studentId, CommentatorInfo: { username: studentName }, Score: myScore, CommentMessage: myComment })
+        newCommentList.unshift({ CommentTime:date.getTime(),CommentTimeStr, Commentator: studentId, CommentatorInfo: { username: studentName }, Score: myScore, CommentMessage: myComment })
         setCommentList(newCommentList)
         const form = {
             placeCode: CommentMode,
